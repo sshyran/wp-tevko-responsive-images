@@ -2,7 +2,7 @@
 Contributors: tevko, wilto, joemcgill, jaspermdegroot, chriscoyier, Michael McGinnis, ryelle, drrobotnik, nacin, georgestephanis, helen, wordpressdotorg, Bocoup
 Donate link: https://app.etapestry.com/hosted/BoweryResidentsCommittee/OnlineDonation.html
 Tags: Responsive, Images, Responsive Images, SRCSET, Picturefill
-Requires at least: 4.1
+Requires at least: 4.0
 Tested up to: 4.3
 Stable tag: 3.0.0
 License: GPLv2
@@ -15,6 +15,9 @@ Bringing automatic default responsive images to WordPress.
 Bringing automatic default responsive images to WordPress.
 
 This plugin works by including all available image sizes for each image upload. Whenever WordPress outputs the image through the media uploader, or whenever a featured image is generated, those sizes will be included in the image tag via the srcset attribute.
+
+**Notice**
+As of version 2.5.0, the plugin adds `srcset` and `sizes` attributes to images on the front end instead of adding them to the image markup saved in posts.
 
 **Full documentation and contributor guidelines can be found on [Github](https://github.com/ResponsiveImagesCG/wp-tevko-responsive-images)**
 

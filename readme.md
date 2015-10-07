@@ -140,9 +140,21 @@ We use a hook because if you attempt to dequeue a script before it's enqueued, w
 
 ## Version
 
-2.5.2
+3.0.0
 
 ## Changelog
+
+**3.0.0**
+
+- Deprecates core functions that have been merged into WordPress core in 4.4.
+- Adds compatibility shims for sites using the plugin's internal functions and hooks.
+- Turns display filter callback into a general utility function for adding srcset and sizes attributes image HTML.
+- Upgrade to Picturefill 3.0.1
+- Avoids calling `image_downsize()` when calculating sizes attributes to speed things up.
+- Fixes a bug when `wp_get_attachment_metadata()` failed to return an array.
+- Clean up inline docs.
+
+**2.5.2**
 
 - Numerous performance and usability improvements
 - Pass height and width to `tevkori_get_sizes()`

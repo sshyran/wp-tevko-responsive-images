@@ -1,6 +1,6 @@
 <?php
 /**
- * Return a source size attribute for an image from an array of values.
+ * Returns the value for a 'sizes' attribute.
  *
  * @since 2.2.0
  * @deprecated 3.0 Use wp_get_attachment_image_sizes()
@@ -22,7 +22,7 @@ function tevkori_get_sizes( $id, $size = 'medium', $args = null ) {
 }
 
 /**
- * Return a source size list for an image from an array of values.
+ * Returns a 'sizes' attribute.
  *
  * @since 2.2.0
  * @deprecated 3.0 Use wp_get_attachment_image_sizes()
@@ -46,7 +46,7 @@ function tevkori_get_sizes_string( $id, $size = 'medium', $args = null ) {
 }
 
 /**
- * Get an array of image sources candidates for use in a 'srcset' attribute.
+ * Returns an array of image sources for a 'srcset' attribute.
  *
  * @since 2.1.0
  * @deprecated 3.0 Use wp_get_attachment_image_srcset_array()
@@ -84,7 +84,7 @@ function tevkori_get_srcset_array( $id, $size = 'medium' ) {
 }
 
 /**
- * Get the value for the 'srcset' attribute.
+ * Returns the value for a 'srcset' attribute.
  *
  * @since 2.3.0
  * @deprecated 3.0 Use 'wp_get_attachment_image_srcset()'
@@ -106,7 +106,7 @@ function tevkori_get_srcset( $id, $size = 'medium' ) {
 }
 
 /**
- * Create a 'srcset' attribute.
+ * Returns a 'srcset' attribute.
  *
  * @since 2.1.0
  * @deprecated 3.0 Use 'wp_get_attachment_image_srcset()'
@@ -128,7 +128,7 @@ function tevkori_get_srcset_string( $id, $size = 'medium' ) {
 }
 
 /**
- * Filters images in post content to add 'srcset' and 'sizes'.
+ * Filter to add 'srcset' and 'sizes' attributes to images in the post content.
  *
  * @since 2.5.0
  * @deprecated 3.0 Use 'wp_make_content_images_responsive()'
@@ -143,7 +143,7 @@ function tevkori_filter_content_images( $content ) {
 }
 
 /**
- * Add srcset and sizes to an 'img' element.
+ * Adds 'srcset' and 'sizes' attributes to image elements.
  *
  * @since 2.6.0
  * @deprecated 3.0 Use 'wp_img_add_srcset_and_sizes()'

@@ -46,8 +46,13 @@ function tevkori_get_picturefill() {
 }
 add_action( 'wp_enqueue_scripts', 'tevkori_get_picturefill' );
 
-if ( ! function_exists( 'wp_get_attachment_image_srcset' ) ) {
-	require_once( plugin_dir_path( __FILE__ ) . 'wp-tevko-core-functions.php' );
-} else {
+/*
+ * If the WordPress version contains the responsive images functions we include
+ * the functions that show deprecation warnings and point to the new functions.
+ * Else we include the plugin's responsive images functions.
+ */
+if ( function_exists( 'wp_get_attachment_image_srcset' ) ) {
 	require_once( plugin_dir_path( __FILE__ ) . 'wp-tevko-compat-shims.php' );
+} else {
+	require_once( plugin_dir_path( __FILE__ ) . 'wp-tevko-core-functions.php' );
 }

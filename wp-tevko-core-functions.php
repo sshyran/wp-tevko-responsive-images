@@ -2,12 +2,18 @@
 /**
  * Returns an array of image sources for a 'srcset' attribute.
  *
+ * @since 2.1.0
+ * @deprecated 3.0 Use 'wp_get_attachment_image_srcset()'
+ * @see 'wp_get_attachment_image_srcset()'
+ *
  * @param int          $id   Image attachment ID.
  * @param array|string $size Image size. Accepts any valid image size, or an array of width and height
  *                           values in pixels (in that order). Default 'medium'.
  * @return array|bool An array of 'srcset' values or false.
  */
 function tevkori_get_srcset_array( $id, $size = 'medium' ) {
+	_deprecated_function( __FUNCTION__, '3.0.0', 'wp_get_attachment_image_srcset()' );
+
 	$arr = array();
 
 	// Get the intermediate size.
@@ -78,6 +84,8 @@ function tevkori_get_srcset_array( $id, $size = 'medium' ) {
 	 * Filter the output of 'tevkori_get_srcset_array()'.
 	 *
 	 * @since 2.4.0
+	 * @deprecated 3.0 Use 'wp_get_attachment_image_srcset'
+	 * @see 'wp_get_attachment_image_srcset'
 	 *
 	 * @param array        $arr   An array of image sources.
 	 * @param int          $id    Attachment ID for image.
@@ -91,6 +99,8 @@ function tevkori_get_srcset_array( $id, $size = 'medium' ) {
  * Returns the value for a 'srcset' attribute.
  *
  * @since 2.3.0
+ * @deprecated 3.0 Use 'wp_get_attachment_image_srcset()'
+ * @see 'wp_get_attachment_image_srcset()'
  *
  * @param int          $id   Image attachment ID.
  * @param array|string $size Image size. Accepts any valid image size, or an array of width and height
@@ -98,6 +108,8 @@ function tevkori_get_srcset_array( $id, $size = 'medium' ) {
  * @return string|bool A 'srcset' value string or false.
  */
 function tevkori_get_srcset( $id, $size = 'medium' ) {
+	_deprecated_function( __FUNCTION__, '3.0.0', 'wp_get_attachment_image_srcset()' );
+
 	$srcset_array = tevkori_get_srcset_array( $id, $size );
 
 	if ( count( $srcset_array ) <= 1 ) {
@@ -111,6 +123,8 @@ function tevkori_get_srcset( $id, $size = 'medium' ) {
  * Returns a 'srcset' attribute.
  *
  * @since 2.1.0
+ * @deprecated 3.0 Use 'wp_get_attachment_image_srcset()'
+ * @see 'wp_get_attachment_image_srcset()'
  *
  * @param int          $id   Image attachment ID.
  * @param array|string $size Image size. Accepts any valid image size, or an array of width and height
@@ -118,6 +132,8 @@ function tevkori_get_srcset( $id, $size = 'medium' ) {
  * @return string|bool A full 'srcset' string or false.
  */
 function tevkori_get_srcset_string( $id, $size = 'medium' ) {
+	_deprecated_function( __FUNCTION__, '3.0.0', 'wp_get_attachment_image_srcset()' );
+
 	$srcset_value = tevkori_get_srcset( $id, $size );
 
 	if ( empty( $srcset_value ) ) {
@@ -131,6 +147,8 @@ function tevkori_get_srcset_string( $id, $size = 'medium' ) {
  * Returns the value for a 'sizes' attribute.
  *
  * @since 2.2.0
+ * @deprecated 3.0 Use 'wp_get_attachment_image_sizes()'
+ * @see 'wp_get_attachment_image_sizes()'
  *
  * @param int          $id   Image attachment ID.
  * @param array|string $size Image size. Accepts any valid image size, or an array of width and height
@@ -144,6 +162,8 @@ function tevkori_get_srcset_string( $id, $size = 'medium' ) {
  * @return string|bool A valid source size value for use in a 'sizes' attribute or false.
  */
 function tevkori_get_sizes( $id, $size = 'medium', $args = null ) {
+	_deprecated_function( __FUNCTION__, '3.0.0', 'wp_get_attachment_image_sizes()' );
+
 	// Try to get the image width from '$args' first.
 	if ( is_array( $args ) && ! empty( $args['width'] ) ) {
 		$img_width = (int) $args['width'];
@@ -179,6 +199,8 @@ function tevkori_get_sizes( $id, $size = 'medium', $args = null ) {
 	* Filter arguments used to create the 'sizes' attribute value.
 	*
 	* @since 2.4.0
+	* @deprecated 3.0 Use 'wp_get_attachment_image_sizes'
+	* @see 'wp_get_attachment_image_sizes'
 	*
 	* @param array        $args An array of arguments used to create a 'sizes' attribute.
 	* @param int          $id   Post ID of the original image.
@@ -234,6 +256,8 @@ function tevkori_get_sizes( $id, $size = 'medium', $args = null ) {
  * Returns a 'sizes' attribute.
  *
  * @since 2.2.0
+ * @deprecated 3.0 Use 'wp_get_attachment_image_sizes()'
+ * @see 'wp_get_attachment_image_sizes()'
  *
  * @param int          $id   Image attachment ID.
  * @param array|string $size Image size. Accepts any valid image size, or an array of width and height
@@ -247,6 +271,8 @@ function tevkori_get_sizes( $id, $size = 'medium', $args = null ) {
  * @return string|bool A valid source size list as a 'sizes' attribute or false.
  */
 function tevkori_get_sizes_string( $id, $size = 'medium', $args = null ) {
+	_deprecated_function( __FUNCTION__, '3.0.0', 'wp_get_attachment_image_sizes()' );
+
 	$sizes = tevkori_get_sizes( $id, $size, $args );
 
 	return $sizes ? 'sizes="' . $sizes . '"' : false;
@@ -256,11 +282,15 @@ function tevkori_get_sizes_string( $id, $size = 'medium', $args = null ) {
  * Filter to add 'srcset' and 'sizes' attributes to images in the post content.
  *
  * @since 2.5.0
+ * @deprecated 3.0 Use 'wp_make_content_images_responsive()'
+ * @see 'wp_make_content_images_responsive()'
  *
  * @param string $content The raw post content to be filtered.
  * @return string Converted content with 'srcset' and 'sizes' added to images.
  */
 function tevkori_filter_content_images( $content ) {
+	_deprecated_function( __FUNCTION__, '3.0.0', 'wp_make_content_images_responsive()' );
+
 	if ( ! preg_match_all( '/<img [^>]+ wp-image-([0-9]+)[^>]+>/i', $content, $matches ) ) {
 		return $content;
 	}
@@ -291,11 +321,15 @@ add_filter( 'the_content', 'tevkori_filter_content_images', 5, 1 );
  * Adds 'srcset' and 'sizes' attributes to image elements.
  *
  * @since 2.6.0
+ * @deprecated 3.0 Use 'wp_image_add_srcset_and_sizes()'
+ * @see 'wp_image_add_srcset_and_sizes()'
  *
  * @param string $image An HTML 'img' element to be filtered.
  * @return string Converted 'img' element with 'srcset' and 'sizes' added.
  */
 function tevkori_img_add_srcset_and_sizes( $image ) {
+	_deprecated_function( __FUNCTION__, '3.0.0', 'wp_image_add_srcset_and_sizes()' );
+
 	// Return early if a 'srcset' attribute already exists.
 	if ( false !== strpos( $image, ' srcset="' ) ) {
 		/*

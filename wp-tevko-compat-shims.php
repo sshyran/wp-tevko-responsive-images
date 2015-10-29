@@ -13,15 +13,17 @@
  */
 function tevkori_get_srcset_array( $id, $size = 'medium' ) {
 	_deprecated_function( __FUNCTION__, '3.0.0', 'wp_get_attachment_image_srcset()' );
-	$srcset_array = wp_get_attachment_image_srcset( $id, $size );
 
-	// Transform array to pre-core style.
-	$arr = false;
-	if ( is_array( $srcset_array ) ) {
-		$arr = array();
-		foreach ( $srcset_array as $source ) {
-			$arr[ $source['value'] ] = $source['url'] . ' ' . $source['value'] . $source['descriptor'];
-		}
+	$srcset = wp_get_attachment_image_srcset( $id, $size );
+
+	// Transform the 'srcset' value string to a pre-core style array.
+	$sources = explode( ', ', $srcset );
+	$arr = array();
+
+	foreach ( $sources as $source ) {
+		$split = explode( ' ', $source );
+		$width = rtrim( $split[1], "w" );
+		$arr[ $width ] = $source;
 	}
 
 	/**
@@ -53,13 +55,14 @@ function tevkori_get_srcset_array( $id, $size = 'medium' ) {
  */
 function tevkori_get_srcset( $id, $size = 'medium' ) {
 	_deprecated_function( __FUNCTION__, '3.0.0', 'wp_get_attachment_image_srcset()' );
-	$srcset_array = tevkori_get_srcset_array( $id, $size );
 
-	if ( count( $srcset_array ) <= 1 ) {
-		return false;
+	if ( has_filter( 'tevkori_srcset_array' ) ) {
+		$srcset_array = tevkori_get_srcset_array( $id, $size );
+
+		return implode( ', ', $srcset_array );
+	} else {
+		return wp_get_attachment_image_srcset( $id, $size );
 	}
-
-	return implode( ', ', $srcset_array );
 }
 
 /**
@@ -76,13 +79,16 @@ function tevkori_get_srcset( $id, $size = 'medium' ) {
  */
 function tevkori_get_srcset_string( $id, $size = 'medium' ) {
 	_deprecated_function( __FUNCTION__, '3.0.0', 'wp_get_attachment_image_srcset()' );
-	$srcset_value = tevkori_get_srcset( $id, $size );
 
-	if ( empty( $srcset_value ) ) {
-		return false;
+	if ( has_filter( 'tevkori_srcset_array' ) ) {
+		$srcset_value = tevkori_get_srcset( $id, $size );
+
+		return $srcset_value ? 'srcset="' . $srcset_value . '"' : false;
+	} else {
+		$srcset_value = wp_get_attachment_image_srcset( $id, $size );
+
+		return $srcset_value ? 'srcset="' . $srcset_value . '"' : false;
 	}
-
-	return 'srcset="' . $srcset_value . '"';
 }
 
 /**
@@ -105,7 +111,78 @@ function tevkori_get_srcset_string( $id, $size = 'medium' ) {
  */
 function tevkori_get_sizes( $id, $size = 'medium', $args = null ) {
 	_deprecated_function( __FUNCTION__, '3.0.0', 'wp_get_attachment_image_sizes()' );
-	return wp_get_attachment_image_sizes( $id, $size, $args );
+
+	if ( $arg || has_filter( 'tevkori_image_sizes_args' ) ) {
+		/**
+		 * @see 'tevkori_get_sizes()' in wp-tevko-core-functions.php.
+		 */
+		if ( is_array( $args ) && ! empty( $args['width'] ) ) {
+			$img_width = (int) $args['width'];
+		} elseif ( $img = image_get_intermediate_size( $id, $size ) ) {
+			list( $img_width, $img_height ) = image_constrain_size_for_editor( $img['width'], $img['height'], $size );
+		}
+
+		if ( ! $img_width ) {
+			return false;
+		}
+
+		$img_width = $img_width . 'px';
+
+		$defaults = array(
+			'sizes' => array(
+				array(
+					'size_value' => '100vw',
+					'mq_value'   => $img_width,
+					'mq_name'    => 'max-width'
+				),
+				array(
+					'size_value' => $img_width
+				),
+			)
+		);
+
+		$args = wp_parse_args( $args, $defaults );
+
+		/**
+		* Filter arguments used to create the 'sizes' attribute value.
+		*
+		* @since 2.4.0
+		* @deprecated 3.0 Use 'wp_get_attachment_image_sizes'
+		* @see 'wp_get_attachment_image_sizes'
+		*
+		* @param array        $args An array of arguments used to create a 'sizes' attribute.
+		* @param int          $id   Post ID of the original image.
+		* @param array|string $size Image size. Image size or an array of width and height
+		*                           values in pixels (in that order).
+		*/
+		$args = apply_filters( 'tevkori_image_sizes_args', $args, $id, $size );
+
+		if ( is_string( $args['sizes'] ) ) {
+			$size_list = $args['sizes'];
+		} elseif ( is_array( $args['sizes'] ) ) {
+			$size_list = '';
+
+			foreach ( $args['sizes'] as $size ) {
+				$size_value = ( $size['size_value'] ) ? $size['size_value'] : '100vw';
+
+				if ( ! empty( $size['mq_value'] ) ) {
+					$media_length    = $size['mq_value'];
+					$media_condition = ( ! empty( $size['mq_name'] ) ) ? $size['mq_name'] : 'max-width';
+					$media_query     = '(' . $media_condition . ": " . $media_length . ') ';
+				} else {
+					$media_query = '';
+				}
+
+				$size_list .= $media_query . $size_value . ', ';
+			}
+
+			$size_list = substr( $size_list, 0, -2 );
+		}
+
+		return ( $size_list ) ? $size_list : false;
+	} else {
+		return wp_get_attachment_image_sizes( $size, $id );
+	}
 }
 
 /**
@@ -128,7 +205,12 @@ function tevkori_get_sizes( $id, $size = 'medium', $args = null ) {
  */
 function tevkori_get_sizes_string( $id, $size = 'medium', $args = null ) {
 	_deprecated_function( __FUNCTION__, '3.0.0', 'wp_get_attachment_image_sizes()' );
-	$sizes = wp_get_attachment_image_sizes( $id, $size, $args );
+
+	if ( $arg || has_filter( 'tevkori_image_sizes_args' ) ) {
+		$sizes = tevkori_get_sizes( $id, $size, $arg );
+	} else {
+		$sizes = wp_get_attachment_image_sizes( $size, $id );
+	}
 
 	return $sizes ? 'sizes="' . esc_attr( $sizes ) . '"' : false;
 }

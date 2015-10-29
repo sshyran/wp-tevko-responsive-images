@@ -3,16 +3,17 @@
  * Returns the value for a 'sizes' attribute.
  *
  * @since 2.2.0
- * @deprecated 3.0 Use wp_get_attachment_image_sizes()
- * @see wp_get_attachment_image_sizes()
+ * @deprecated 3.0 Use 'wp_get_attachment_image_sizes()'
+ * @see 'wp_get_attachment_image_sizes()'
 
- * @param int    $id   Image attachment ID.
- * @param string $size Optional. Name of image size. Default value: 'medium'.
- * @param array  $args {
+ * @param int          $id   Image attachment ID.
+ * @param array|string $size Image size. Accepts any valid image size, or an array of width and height
+ *                           values in pixels (in that order). Default 'medium'.
+ * @param array        $args {
  *     Optional. Arguments to retrieve posts.
  *
  *     @type array|string $sizes An array or string containing of size information.
- *     @type int          $width A single width value used in the default `sizes` string.
+ *     @type int          $width A single width value used in the default 'sizes' string.
  * }
  * @return string|bool A valid source size value for use in a 'sizes' attribute or false.
  */
@@ -25,16 +26,17 @@ function tevkori_get_sizes( $id, $size = 'medium', $args = null ) {
  * Returns a 'sizes' attribute.
  *
  * @since 2.2.0
- * @deprecated 3.0 Use wp_get_attachment_image_sizes()
- * @see wp_get_attachment_image_sizes()
+ * @deprecated 3.0 Use 'wp_get_attachment_image_sizes()'
+ * @see 'wp_get_attachment_image_sizes()'
  *
- * @param int    $id   Image attachment ID.
- * @param string $size Optional. Name of image size. Default value: 'medium'.
- * @param array  $args {
+ * @param int          $id   Image attachment ID.
+ * @param array|string $size Image size. Accepts any valid image size, or an array of width and height
+ *                           values in pixels (in that order). Default 'medium'.
+ * @param array        $args {
  *     Optional. Arguments to retrieve posts.
  *
  *     @type array|string $sizes An array or string containing of size information.
- *     @type int          $width A single width value used in the default `sizes` string.
+ *     @type int          $width A single width value used in the default 'sizes' string.
  * }
  * @return string|bool A valid source size list as a 'sizes' attribute or false.
  */
@@ -49,12 +51,13 @@ function tevkori_get_sizes_string( $id, $size = 'medium', $args = null ) {
  * Returns an array of image sources for a 'srcset' attribute.
  *
  * @since 2.1.0
- * @deprecated 3.0 Use wp_get_attachment_image_srcset_array()
- * @see wp_get_attachment_image_srcset_array()
+ * @deprecated 3.0 Use 'wp_get_attachment_image_srcset_array()'
+ * @see 'wp_get_attachment_image_srcset_array()'
  *
- * @param int    $id   Image attachment ID.
- * @param string $size Optional. Name of image size. Default value: 'medium'.
- * @return array|bool  An array of `srcset` values or false.
+ * @param int          $id   Image attachment ID.
+ * @param array|string $size Image size. Accepts any valid image size, or an array of width and height
+ *                           values in pixels (in that order). Default 'medium'.
+ * @return array|bool An array of 'srcset' values or false.
  */
 function tevkori_get_srcset_array( $id, $size = 'medium' ) {
 	_deprecated_function( __FUNCTION__, '3.0.0', 'wp_get_attachment_image_srcset_array()' );
@@ -70,7 +73,7 @@ function tevkori_get_srcset_array( $id, $size = 'medium' ) {
 	}
 
 	/**
-	 * Filter the output of tevkori_get_srcset_array().
+	 * Filter the output of 'tevkori_get_srcset_array()'.
 	 *
 	 * @since 2.4.0
 	 * @deprecated 3.0 Use 'wp_get_attachment_image_srcset_array'
@@ -78,7 +81,8 @@ function tevkori_get_srcset_array( $id, $size = 'medium' ) {
 	 *
 	 * @param array        $arr   An array of image sources.
 	 * @param int          $id    Attachment ID for image.
-	 * @param array|string $size  Size of image, either array or string.
+	 * @param array|string $size  Image size. Image size or an array of width and height
+	 *                            values in pixels (in that order).
 	 */
 	return apply_filters( 'tevkori_srcset_array', $arr, $id, $size );
 }
@@ -90,8 +94,9 @@ function tevkori_get_srcset_array( $id, $size = 'medium' ) {
  * @deprecated 3.0 Use 'wp_get_attachment_image_srcset()'
  * @see 'wp_get_attachment_image_srcset()'
  *
- * @param int    $id   Image attachment ID.
- * @param string $size Optional. Name of image size. Default value: 'medium'.
+ * @param int          $id   Image attachment ID.
+ * @param array|string $size Image size. Accepts any valid image size, or an array of width and height
+ *                           values in pixels (in that order). Default 'medium'.
  * @return string|bool A 'srcset' value string or false.
  */
 function tevkori_get_srcset( $id, $size = 'medium' ) {
@@ -112,8 +117,9 @@ function tevkori_get_srcset( $id, $size = 'medium' ) {
  * @deprecated 3.0 Use 'wp_get_attachment_image_srcset()'
  * @see 'wp_get_attachment_image_srcset()'
  *
- * @param int    $id   Image attachment ID.
- * @param string $size Optional. Name of image size. Default value: 'medium'.
+ * @param int          $id   Image attachment ID.
+ * @param array|string $size Image size. Accepts any valid image size, or an array of width and height
+ *                           values in pixels (in that order). Default 'medium'.
  * @return string|bool A full 'srcset' string or false.
  */
 function tevkori_get_srcset_string( $id, $size = 'medium' ) {

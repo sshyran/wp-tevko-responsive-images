@@ -40,9 +40,7 @@ if ( class_exists( 'Imagick' ) ) {
 	add_filter( 'wp_image_editors', 'tevkori_wp_image_editors' );
 }
 
-/**
- * Enqueue bundled version of the Picturefill library.
- */
+// Enqueue bundled version of the Picturefill library.
 function tevkori_get_picturefill() {
 	wp_enqueue_script( 'picturefill', plugins_url( 'js/picturefill.min.js', __FILE__ ), array(), '3.0.1', true );
 }

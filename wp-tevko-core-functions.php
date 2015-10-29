@@ -1,130 +1,5 @@
 <?php
 /**
- * Returns the value for a 'sizes' attribute.
- *
- * @since 2.2.0
- *
- * @param int          $id   Image attachment ID.
- * @param array|string $size Image size. Accepts any valid image size, or an array of width and height
- *                           values in pixels (in that order). Default 'medium'.
- * @param array        $args {
- *     Optional. Arguments to retrieve posts.
- *
- *     @type array|string $sizes An array or string containing of size information.
- *     @type int          $width A single width value used in the default 'sizes' string.
- * }
- * @return string|bool A valid source size value for use in a 'sizes' attribute or false.
- */
-function tevkori_get_sizes( $id, $size = 'medium', $args = null ) {
-	// Try to get the image width from '$args' first.
-	if ( is_array( $args ) && ! empty( $args['width'] ) ) {
-		$img_width = (int) $args['width'];
-	} elseif ( $img = image_get_intermediate_size( $id, $size ) ) {
-		list( $img_width, $img_height ) = image_constrain_size_for_editor( $img['width'], $img['height'], $size );
-	}
-
-	// Bail early if '$img_width' isn't set.
-	if ( ! $img_width ) {
-		return false;
-	}
-
-	// Set the image width in pixels.
-	$img_width = $img_width . 'px';
-
-	// Set up our default values.
-	$defaults = array(
-		'sizes' => array(
-			array(
-				'size_value' => '100vw',
-				'mq_value'   => $img_width,
-				'mq_name'    => 'max-width'
-			),
-			array(
-				'size_value' => $img_width
-			),
-		)
-	);
-
-	$args = wp_parse_args( $args, $defaults );
-
-	/**
-	* Filter arguments used to create the 'sizes' attribute value.
-	*
-	* @since 2.4.0
-	*
-	* @param array        $args An array of arguments used to create a 'sizes' attribute.
-	* @param int          $id   Post ID of the original image.
-	* @param array|string $size Image size. Image size or an array of width and height
-	*                           values in pixels (in that order).
-	*/
-	$args = apply_filters( 'tevkori_image_sizes_args', $args, $id, $size );
-
-	// If sizes is passed as a string, just use the string.
-	if ( is_string( $args['sizes'] ) ) {
-		$size_list = $args['sizes'];
-
-	// Otherwise, breakdown the array and build a sizes string.
-	} elseif ( is_array( $args['sizes'] ) ) {
-
-		$size_list = '';
-
-		foreach ( $args['sizes'] as $size ) {
-
-			// Use 100vw as the size value unless something else is specified.
-			$size_value = ( $size['size_value'] ) ? $size['size_value'] : '100vw';
-
-			// If a media length is specified, build the media query.
-			if ( ! empty( $size['mq_value'] ) ) {
-
-				$media_length = $size['mq_value'];
-
-				// Use max-width as the media condition unless min-width is specified.
-				$media_condition = ( ! empty( $size['mq_name'] ) ) ? $size['mq_name'] : 'max-width';
-
-				// If a media length was set, create the media query.
-				$media_query = '(' . $media_condition . ": " . $media_length . ') ';
-
-			} else {
-
-				// If no media length was set, '$media_query' is blank.
-				$media_query = '';
-			}
-
-			// Add to the source size list string.
-			$size_list .= $media_query . $size_value . ', ';
-		}
-
-		// Remove the trailing comma and space from the end of the string.
-		$size_list = substr( $size_list, 0, -2 );
-	}
-
-	// If '$size_list' is defined set the string, otherwise set false.
-	return ( $size_list ) ? $size_list : false;
-}
-
-/**
- * Returns a 'sizes' attribute.
- *
- * @since 2.2.0
- *
- * @param int          $id   Image attachment ID.
- * @param array|string $size Image size. Accepts any valid image size, or an array of width and height
- *                           values in pixels (in that order). Default 'medium'.
- * @param array        $args {
- *     Optional. Arguments to retrieve posts.
- *
- *     @type array|string $sizes An array or string containing of size information.
- *     @type int          $width A single width value used in the default 'sizes' string.
- * }
- * @return string|bool A valid source size list as a 'sizes' attribute or false.
- */
-function tevkori_get_sizes_string( $id, $size = 'medium', $args = null ) {
-	$sizes = tevkori_get_sizes( $id, $size, $args );
-
-	return $sizes ? 'sizes="' . $sizes . '"' : false;
-}
-
-/**
  * Returns an array of image sources for a 'srcset' attribute.
  *
  * @param int          $id   Image attachment ID.
@@ -250,6 +125,131 @@ function tevkori_get_srcset_string( $id, $size = 'medium' ) {
 	}
 
 	return 'srcset="' . $srcset_value . '"';
+}
+
+/**
+ * Returns the value for a 'sizes' attribute.
+ *
+ * @since 2.2.0
+ *
+ * @param int          $id   Image attachment ID.
+ * @param array|string $size Image size. Accepts any valid image size, or an array of width and height
+ *                           values in pixels (in that order). Default 'medium'.
+ * @param array        $args {
+ *     Optional. Arguments to retrieve posts.
+ *
+ *     @type array|string $sizes An array or string containing of size information.
+ *     @type int          $width A single width value used in the default 'sizes' string.
+ * }
+ * @return string|bool A valid source size value for use in a 'sizes' attribute or false.
+ */
+function tevkori_get_sizes( $id, $size = 'medium', $args = null ) {
+	// Try to get the image width from '$args' first.
+	if ( is_array( $args ) && ! empty( $args['width'] ) ) {
+		$img_width = (int) $args['width'];
+	} elseif ( $img = image_get_intermediate_size( $id, $size ) ) {
+		list( $img_width, $img_height ) = image_constrain_size_for_editor( $img['width'], $img['height'], $size );
+	}
+
+	// Bail early if '$img_width' isn't set.
+	if ( ! $img_width ) {
+		return false;
+	}
+
+	// Set the image width in pixels.
+	$img_width = $img_width . 'px';
+
+	// Set up our default values.
+	$defaults = array(
+		'sizes' => array(
+			array(
+				'size_value' => '100vw',
+				'mq_value'   => $img_width,
+				'mq_name'    => 'max-width'
+			),
+			array(
+				'size_value' => $img_width
+			),
+		)
+	);
+
+	$args = wp_parse_args( $args, $defaults );
+
+	/**
+	* Filter arguments used to create the 'sizes' attribute value.
+	*
+	* @since 2.4.0
+	*
+	* @param array        $args An array of arguments used to create a 'sizes' attribute.
+	* @param int          $id   Post ID of the original image.
+	* @param array|string $size Image size. Image size or an array of width and height
+	*                           values in pixels (in that order).
+	*/
+	$args = apply_filters( 'tevkori_image_sizes_args', $args, $id, $size );
+
+	// If sizes is passed as a string, just use the string.
+	if ( is_string( $args['sizes'] ) ) {
+		$size_list = $args['sizes'];
+
+	// Otherwise, breakdown the array and build a sizes string.
+	} elseif ( is_array( $args['sizes'] ) ) {
+
+		$size_list = '';
+
+		foreach ( $args['sizes'] as $size ) {
+
+			// Use 100vw as the size value unless something else is specified.
+			$size_value = ( $size['size_value'] ) ? $size['size_value'] : '100vw';
+
+			// If a media length is specified, build the media query.
+			if ( ! empty( $size['mq_value'] ) ) {
+
+				$media_length = $size['mq_value'];
+
+				// Use max-width as the media condition unless min-width is specified.
+				$media_condition = ( ! empty( $size['mq_name'] ) ) ? $size['mq_name'] : 'max-width';
+
+				// If a media length was set, create the media query.
+				$media_query = '(' . $media_condition . ": " . $media_length . ') ';
+
+			} else {
+
+				// If no media length was set, '$media_query' is blank.
+				$media_query = '';
+			}
+
+			// Add to the source size list string.
+			$size_list .= $media_query . $size_value . ', ';
+		}
+
+		// Remove the trailing comma and space from the end of the string.
+		$size_list = substr( $size_list, 0, -2 );
+	}
+
+	// If '$size_list' is defined set the string, otherwise set false.
+	return ( $size_list ) ? $size_list : false;
+}
+
+/**
+ * Returns a 'sizes' attribute.
+ *
+ * @since 2.2.0
+ *
+ * @param int          $id   Image attachment ID.
+ * @param array|string $size Image size. Accepts any valid image size, or an array of width and height
+ *                           values in pixels (in that order). Default 'medium'.
+ * @param array        $args {
+ *     Optional. Arguments to retrieve posts.
+ *
+ *     @type array|string $sizes An array or string containing of size information.
+ *     @type int          $width A single width value used in the default 'sizes' string.
+ * }
+ * @return string|bool A valid source size list as a 'sizes' attribute or false.
+ */
+function tevkori_get_sizes_string( $id, $size = 'medium', $args = null ) {
+	$sizes = tevkori_get_sizes( $id, $size, $args );
+
+	return $sizes ? 'sizes="' . $sizes . '"' : false;
 }
 
 /**

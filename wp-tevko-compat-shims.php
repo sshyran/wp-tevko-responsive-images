@@ -1,53 +1,5 @@
 <?php
 /**
- * Returns the value for a 'sizes' attribute.
- *
- * @since 2.2.0
- * @deprecated 3.0 Use 'wp_get_attachment_image_sizes()'
- * @see 'wp_get_attachment_image_sizes()'
-
- * @param int          $id   Image attachment ID.
- * @param array|string $size Image size. Accepts any valid image size, or an array of width and height
- *                           values in pixels (in that order). Default 'medium'.
- * @param array        $args {
- *     Optional. Arguments to retrieve posts.
- *
- *     @type array|string $sizes An array or string containing of size information.
- *     @type int          $width A single width value used in the default 'sizes' string.
- * }
- * @return string|bool A valid source size value for use in a 'sizes' attribute or false.
- */
-function tevkori_get_sizes( $id, $size = 'medium', $args = null ) {
-	_deprecated_function( __FUNCTION__, '3.0.0', 'wp_get_attachment_image_sizes()' );
-	return wp_get_attachment_image_sizes( $id, $size, $args );
-}
-
-/**
- * Returns a 'sizes' attribute.
- *
- * @since 2.2.0
- * @deprecated 3.0 Use 'wp_get_attachment_image_sizes()'
- * @see 'wp_get_attachment_image_sizes()'
- *
- * @param int          $id   Image attachment ID.
- * @param array|string $size Image size. Accepts any valid image size, or an array of width and height
- *                           values in pixels (in that order). Default 'medium'.
- * @param array        $args {
- *     Optional. Arguments to retrieve posts.
- *
- *     @type array|string $sizes An array or string containing of size information.
- *     @type int          $width A single width value used in the default 'sizes' string.
- * }
- * @return string|bool A valid source size list as a 'sizes' attribute or false.
- */
-function tevkori_get_sizes_string( $id, $size = 'medium', $args = null ) {
-	_deprecated_function( __FUNCTION__, '3.0.0', 'wp_get_attachment_image_sizes()' );
-	$sizes = wp_get_attachment_image_sizes( $id, $size, $args );
-
-	return $sizes ? 'sizes="' . esc_attr( $sizes ) . '"' : false;
-}
-
-/**
  * Returns an array of image sources for a 'srcset' attribute.
  *
  * @since 2.1.0
@@ -131,6 +83,54 @@ function tevkori_get_srcset_string( $id, $size = 'medium' ) {
 	}
 
 	return 'srcset="' . $srcset_value . '"';
+}
+
+/**
+ * Returns the value for a 'sizes' attribute.
+ *
+ * @since 2.2.0
+ * @deprecated 3.0 Use 'wp_get_attachment_image_sizes()'
+ * @see 'wp_get_attachment_image_sizes()'
+
+ * @param int          $id   Image attachment ID.
+ * @param array|string $size Image size. Accepts any valid image size, or an array of width and height
+ *                           values in pixels (in that order). Default 'medium'.
+ * @param array        $args {
+ *     Optional. Arguments to retrieve posts.
+ *
+ *     @type array|string $sizes An array or string containing of size information.
+ *     @type int          $width A single width value used in the default 'sizes' string.
+ * }
+ * @return string|bool A valid source size value for use in a 'sizes' attribute or false.
+ */
+function tevkori_get_sizes( $id, $size = 'medium', $args = null ) {
+	_deprecated_function( __FUNCTION__, '3.0.0', 'wp_get_attachment_image_sizes()' );
+	return wp_get_attachment_image_sizes( $id, $size, $args );
+}
+
+/**
+ * Returns a 'sizes' attribute.
+ *
+ * @since 2.2.0
+ * @deprecated 3.0 Use 'wp_get_attachment_image_sizes()'
+ * @see 'wp_get_attachment_image_sizes()'
+ *
+ * @param int          $id   Image attachment ID.
+ * @param array|string $size Image size. Accepts any valid image size, or an array of width and height
+ *                           values in pixels (in that order). Default 'medium'.
+ * @param array        $args {
+ *     Optional. Arguments to retrieve posts.
+ *
+ *     @type array|string $sizes An array or string containing of size information.
+ *     @type int          $width A single width value used in the default 'sizes' string.
+ * }
+ * @return string|bool A valid source size list as a 'sizes' attribute or false.
+ */
+function tevkori_get_sizes_string( $id, $size = 'medium', $args = null ) {
+	_deprecated_function( __FUNCTION__, '3.0.0', 'wp_get_attachment_image_sizes()' );
+	$sizes = wp_get_attachment_image_sizes( $id, $size, $args );
+
+	return $sizes ? 'sizes="' . esc_attr( $sizes ) . '"' : false;
 }
 
 /**

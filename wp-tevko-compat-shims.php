@@ -3,8 +3,8 @@
  * Returns an array of image sources for a 'srcset' attribute.
  *
  * @since 2.1.0
- * @deprecated 3.0 Use 'wp_get_attachment_image_srcset_array()'
- * @see 'wp_get_attachment_image_srcset_array()'
+ * @deprecated 3.0 Use 'wp_get_attachment_image_srcset()'
+ * @see 'wp_get_attachment_image_srcset()'
  *
  * @param int          $id   Image attachment ID.
  * @param array|string $size Image size. Accepts any valid image size, or an array of width and height
@@ -12,8 +12,8 @@
  * @return array|bool An array of 'srcset' values or false.
  */
 function tevkori_get_srcset_array( $id, $size = 'medium' ) {
-	_deprecated_function( __FUNCTION__, '3.0.0', 'wp_get_attachment_image_srcset_array()' );
-	$srcset_array = wp_get_attachment_image_srcset_array( $id, $size );
+	_deprecated_function( __FUNCTION__, '3.0.0', 'wp_get_attachment_image_srcset()' );
+	$srcset_array = wp_get_attachment_image_srcset( $id, $size );
 
 	// Transform array to pre-core style.
 	$arr = false;
@@ -28,8 +28,8 @@ function tevkori_get_srcset_array( $id, $size = 'medium' ) {
 	 * Filter the output of 'tevkori_get_srcset_array()'.
 	 *
 	 * @since 2.4.0
-	 * @deprecated 3.0 Use 'wp_get_attachment_image_srcset_array'
-	 * @see 'wp_get_attachment_image_srcset_array'
+	 * @deprecated 3.0 Use 'wp_get_attachment_image_srcset'
+	 * @see 'wp_get_attachment_image_srcset'
 	 *
 	 * @param array        $arr   An array of image sources.
 	 * @param int          $id    Attachment ID for image.
@@ -152,13 +152,13 @@ function tevkori_filter_content_images( $content ) {
  * Adds 'srcset' and 'sizes' attributes to image elements.
  *
  * @since 2.6.0
- * @deprecated 3.0 Use 'wp_img_add_srcset_and_sizes()'
- * @see 'wp_img_add_srcset_and_sizes()'
+ * @deprecated 3.0 Use 'wp_image_add_srcset_and_sizes()'
+ * @see 'wp_image_add_srcset_and_sizes()'
  *
  * @param string $image An HTML 'img' element to be filtered.
  * @return string Converted 'img' element with 'srcset' and 'sizes' added.
  */
 function tevkori_img_add_srcset_and_sizes( $image ) {
-	_deprecated_function( __FUNCTION__, '3.0.0', 'wp_img_add_srcset_and_sizes()' );
-	return wp_img_add_srcset_and_sizes( $image );
+	_deprecated_function( __FUNCTION__, '3.0.0', 'wp_image_add_srcset_and_sizes()' );
+	return wp_image_add_srcset_and_sizes( $image );
 }

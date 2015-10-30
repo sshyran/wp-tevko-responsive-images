@@ -63,6 +63,9 @@ class SampleTest extends WP_UnitTestCase {
 
 	/* OUR TESTS */
 
+	/**
+	 * @expectedDeprecated tevkori_get_sizes
+	 */
 	function test_tevkori_get_sizes() {
 		// make an image
 		$id = $this->_test_img();
@@ -87,6 +90,9 @@ class SampleTest extends WP_UnitTestCase {
 		}
 	}
 
+	/**
+	 * @expectedDeprecated tevkori_get_sizes
+	 */
 	function test_tevkori_get_sizes_with_args() {
 		// make an image
 		$id = $this->_test_img();
@@ -115,6 +121,9 @@ class SampleTest extends WP_UnitTestCase {
 		$this->assertSame($expected, $sizes);
 	}
 
+	/**
+	 * @expectedDeprecated tevkori_get_sizes
+	 */
 	function test_filter_tevkori_get_sizes_string() {
 		// Add our test filter.
 		add_filter( 'tevkori_image_sizes_args', array( $this, '_test_tevkori_image_sizes_args' ) );
@@ -137,6 +146,9 @@ class SampleTest extends WP_UnitTestCase {
 		return $args;
 	}
 
+	/**
+	 * @expectedDeprecated tevkori_get_srcset_array
+	 */
 	function test_filter_tevkori_srcset_array() {
 		// Add test filter
 		add_filter( 'tevkori_srcset_array', array( $this, '_test_tevkori_srcset_array' ) );
@@ -167,6 +179,10 @@ class SampleTest extends WP_UnitTestCase {
 		return $array;
 	}
 
+	/**
+	 * @expectedDeprecated tevkori_get_sizes
+	 * @expectedDeprecated tevkori_get_sizes_string
+	 */
 	function test_tevkori_get_sizes_string() {
 		// make an image
 		$id = $this->_test_img();
@@ -179,6 +195,9 @@ class SampleTest extends WP_UnitTestCase {
 		$this->assertSame( $expected, $sizes_string);
 	}
 
+	/**
+	 * @expectedDeprecated tevkori_get_srcset_array
+	 */
 	function test_tevkori_get_srcset_array() {
 		// make an image
 		$id = $this->_test_img();
@@ -198,6 +217,9 @@ class SampleTest extends WP_UnitTestCase {
 		$this->assertSame( $expected, $sizes );
 	}
 
+	/**
+	 * @expectedDeprecated tevkori_get_srcset_array
+	 */
 	function test_tevkori_get_srcset_array_random_size_name() {
 		// make an image
 		$id = $this->_test_img();
@@ -217,6 +239,9 @@ class SampleTest extends WP_UnitTestCase {
 		$this->assertSame( $expected, $sizes );
 	}
 
+	/**
+	 * @expectedDeprecated tevkori_get_srcset_array
+	 */
 	function test_tevkori_get_srcset_array_no_date_upoads() {
 		// Save the current setting for uploads folders
 		$uploads_use_yearmonth_folders = get_option( 'uploads_use_yearmonth_folders' );
@@ -242,6 +267,10 @@ class SampleTest extends WP_UnitTestCase {
 		update_option( 'uploads_use_yearmonth_folders', $uploads_use_yearmonth_folders );
 	}
 
+	/**
+	 * @expectedDeprecated tevkori_get_srcset
+	 * @expectedDeprecated tevkori_get_srcset_array
+	 */
 	function test_tevkori_get_srcset_single_srcset() {
 		// make an image
 		$id = $this->_test_img();
@@ -256,6 +285,7 @@ class SampleTest extends WP_UnitTestCase {
 	/**
 	 * Test for filtering out leftover sizes after an image is edited.
 	 * @group 155
+	 * @expectedDeprecated tevkori_get_srcset_array
 	 */
 	function test_tevkori_get_srcset_array_with_edits() {
 		// Make an image.
@@ -288,6 +318,9 @@ class SampleTest extends WP_UnitTestCase {
 		}
 	}
 
+	/**
+	 * @expectedDeprecated tevkori_get_srcset_array
+	 */
 	function test_tevkori_get_srcset_array_false() {
 		// make an image
 		$id = $this->_test_img();
@@ -297,6 +330,9 @@ class SampleTest extends WP_UnitTestCase {
 		$this->assertFalse( $sizes );
 	}
 
+	/**
+	 * @expectedDeprecated tevkori_get_srcset_array
+	 */
 	function test_tevkori_get_srcset_array_no_width() {
 		// Filter image_downsize() output.
 		add_filter( 'wp_generate_attachment_metadata', array( $this, '_test_tevkori_get_srcset_array_no_width_filter' ) );
@@ -321,6 +357,9 @@ class SampleTest extends WP_UnitTestCase {
 		return $meta;
 	}
 
+	/**
+	 * @expectedDeprecated tevkori_get_srcset_string
+	 */
 	function test_tevkori_get_srcset_string() {
 		// make an image
 		$id = $this->_test_img();
@@ -395,6 +434,9 @@ class SampleTest extends WP_UnitTestCase {
 
 	/**
 	 * @group 170
+	 * @expectedDeprecated tevkori_get_srcset_string
+	 * @expectedDeprecated tevkori_get_sizes_string
+	 * @expectedDeprecated tevkori_filter_content_images
 	 */
 	function test_tevkori_filter_content_images() {
 		// Make image.
@@ -448,6 +490,7 @@ class SampleTest extends WP_UnitTestCase {
 
 	/**
 	 * @group 170
+	 * @expectedDeprecated tevkori_filter_content_images
 	 */
 	function test_tevkori_filter_content_images_with_preexisting_srcset() {
 		// Make image.

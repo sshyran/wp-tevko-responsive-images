@@ -4,7 +4,8 @@
  *
  * @since 2.1.0
  * @deprecated 3.0 Use 'wp_get_attachment_image_srcset()'
- * @see 'wp_get_attachment_image_srcset()'
+ * @see 'wp_get_attachment_image_sizes()'
+ * @see 'wp_calculate_image_srcset()'
  *
  * @param int          $id   Image attachment ID.
  * @param array|string $size Image size. Accepts any valid image size, or an array of width and height
@@ -34,8 +35,8 @@ function tevkori_get_srcset_array( $id, $size = 'medium' ) {
 	 * Filter the output of 'tevkori_get_srcset_array()'.
 	 *
 	 * @since 2.4.0
-	 * @deprecated 3.0 Use 'wp_get_attachment_image_srcset'
-	 * @see 'wp_get_attachment_image_srcset'
+	 * @deprecated 3.0 Use 'wp_calculate_image_srcset'
+	 * @see 'wp_calculate_image_srcset'
 	 *
 	 * @param array        $arr   An array of image sources.
 	 * @param int          $id    Attachment ID for image.
@@ -50,7 +51,8 @@ function tevkori_get_srcset_array( $id, $size = 'medium' ) {
  *
  * @since 2.3.0
  * @deprecated 3.0 Use 'wp_get_attachment_image_srcset()'
- * @see 'wp_get_attachment_image_srcset()'
+ * @see 'wp_get_attachment_image_sizes()'
+ * @see 'wp_calculate_image_srcset()'
  *
  * @param int          $id   Image attachment ID.
  * @param array|string $size Image size. Accepts any valid image size, or an array of width and height
@@ -74,7 +76,8 @@ function tevkori_get_srcset( $id, $size = 'medium' ) {
  *
  * @since 2.1.0
  * @deprecated 3.0 Use 'wp_get_attachment_image_srcset()'
- * @see 'wp_get_attachment_image_srcset()'
+ * @see 'wp_get_attachment_image_sizes()'
+ * @see 'wp_calculate_image_srcset()'
  *
  * @param int          $id   Image attachment ID.
  * @param array|string $size Image size. Accepts any valid image size, or an array of width and height
@@ -204,7 +207,7 @@ function tevkori_get_sizes( $id, $size = 'medium', $args = null ) {
 		// If '$size_list' is defined set the string, otherwise set false.
 		return ( $size_list ) ? $size_list : false;
 	} else {
-		return wp_get_attachment_image_sizes( $size, $id );
+		return wp_get_attachment_image_sizes( $size, $image_meta = null, $id );
 	}
 }
 
@@ -232,7 +235,7 @@ function tevkori_get_sizes_string( $id, $size = 'medium', $args = null ) {
 	if ( $args || has_filter( 'tevkori_image_sizes_args' ) ) {
 		$sizes = tevkori_get_sizes( $id, $size, $args );
 	} else {
-		$sizes = wp_get_attachment_image_sizes( $size, $id );
+		$sizes = wp_get_attachment_image_sizes( $size, $image_meta = null, $id );
 	}
 
 	return $sizes ? 'sizes="' . esc_attr( $sizes ) . '"' : false;

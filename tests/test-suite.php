@@ -78,11 +78,6 @@ class SampleTest extends WP_UnitTestCase {
 		foreach( $intermediates as $int ) {
 			$width = get_option( $int . '_size_w' );
 
-			// the sizes width gets constrained to $content_width by default
-			if ( $content_width > 0 ) {
-				$width = ( $width > $content_width ) ? $content_width : $width;
-			}
-
 			$expected = '(max-width: ' . $width . 'px) 100vw, ' . $width . 'px';
 			$sizes = tevkori_get_sizes( $id, $int );
 

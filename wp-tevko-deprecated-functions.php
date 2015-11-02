@@ -124,7 +124,7 @@ function tevkori_get_sizes( $id, $size = 'medium', $args = null ) {
 		if ( is_array( $args ) && ! empty( $args['width'] ) ) {
 			$img_width = (int) $args['width'];
 		} elseif ( $img = image_get_intermediate_size( $id, $size ) ) {
-			list( $img_width, $img_height ) = image_constrain_size_for_editor( $img['width'], $img['height'], $size );
+			$img_width = $img['width'];
 		}
 
 		// Bail early if '$img_width' isn't set.

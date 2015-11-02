@@ -363,7 +363,7 @@ class SampleTest extends WP_UnitTestCase {
 	function test_tevkori_get_srcset_string() {
 		// make an image
 		$id = $this->_test_img();
-		$sizes = tevkori_get_srcset_string( $id, 'full-size' );
+		$sizes = tevkori_get_srcset_string( $id, 'full' );
 
 		$image = wp_get_attachment_metadata( $id );
 		$year_month = date('Y/m');

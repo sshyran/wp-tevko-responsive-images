@@ -331,28 +331,48 @@ class SampleTest extends WP_UnitTestCase {
 	 * @expectedDeprecated tevkori_get_srcset_array
 	 */
 	function test_tevkori_get_srcset_array_no_width() {
-		// Filter wp_generate_attachment_metadata() output.
-		add_filter( 'wp_generate_attachment_metadata', array( $this, '_test_tevkori_get_srcset_array_no_width_filter' ) );
+		// Filter wp_get_attachment_image_src() output.
+		add_filter( 'wp_get_attachment_image_src', array( $this, '_test_tevkori_get_srcset_array_no_width_filter' ) );
 
 		// Make our attachment.
 		$id = $this->_test_img();
 
-		$srcset = tevkori_get_srcset_array( $id, 'medium' );
+		/*
+		 * 'tevkori_get_srcset_array()' calls `wp_get_attachment_image_srcset()` which uses
+		 * `wp_get_attachment_image_src()` to get the image size.
+		 * To manipulate the image size for this test we have to use the `wp_get_attachment_image_src` filter,
+		 * but this was only introduced in WP 4.3.
+		 * When testing against older WordPress versions we test 'wp_calculate_image_srcset()' instead.
+		 */
+		if ( has_filter( 'wp_get_attachment_image_src', array( $this, '_test_tevkori_get_srcset_array_no_width_filter' ) ) ) {
+			$srcset = tevkori_get_srcset_array( $id, 'medium' );
 
-		// The srcset should be false.
-		$this->assertFalse( $srcset );
+			// The srcset should be false.
+			$this->assertFalse( $srcset );
+		} else {
+			// This function call is only because PHPUnit expects a deprecation warning.
+			$ignore = tevkori_get_srcset_array( $id, 'medium' );
+
+			$size_array = array( 0, 0 );
+			$image_meta = wp_get_attachment_metadata( $id );
+			$image_name = $image_meta['file'];
+			$srcset = wp_calculate_image_srcset( $image_name, $size_array, $image_meta );
+
+			// The srcset should be false.
+			$this->assertFalse( $srcset );
+		}
 
 		// Remove filter.
-		remove_filter( 'wp_generate_attachment_metadata', array( $this, '_test_tevkori_get_srcset_array_no_width_filter' ) );
+		remove_filter( 'wp_get_attachment_image_src', array( $this, '_test_tevkori_get_srcset_array_no_width_filter' ) );
 	}
 
 	/**
-	 * Helper funtion to filter wp_generate_attachment_metadata and return zero values for width and height.
+	 * Helper funtion to filter wp_get_attachment_image_src and return zero values for width and height.
 	 */
-	public function _test_tevkori_get_srcset_array_no_width_filter( $meta ) {
-		$meta['sizes']['medium']['width'] = 0;
-		$meta['sizes']['medium']['height'] = 0;
-		return $meta;
+	public function _test_tevkori_get_srcset_array_no_width_filter( $image ) {
+		$image[1] = 0;
+		$image[2] = 0;
+		return $image;
 	}
 
 	/**

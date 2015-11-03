@@ -386,6 +386,7 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 
 	/**
 	 * @group 159
+	 * @expectedDeprecated tevkori_filter_attachment_image_attributes
 	 */
 	function test_tevkori_filter_attachment_image_attributes() {
 		// Make an image.
@@ -413,6 +414,7 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 
 	/**
 	 * @group 159
+	 * @expectedDeprecated tevkori_filter_attachment_image_attributes
 	 */
 	function test_tevkori_filter_attachment_image_attributes_thumbnails() {
 		// Make an image.

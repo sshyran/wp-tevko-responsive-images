@@ -255,18 +255,3 @@ function tevkori_filter_content_images( $content ) {
 	_deprecated_function( __FUNCTION__, '3.0.0', 'wp_make_content_images_responsive()' );
 	return wp_make_content_images_responsive( $content );
 }
-
-/**
- * Adds 'srcset' and 'sizes' attributes to image elements.
- *
- * @since 2.6.0
- * @deprecated 3.0 Use 'wp_image_add_srcset_and_sizes()'
- * @see 'wp_image_add_srcset_and_sizes()'
- *
- * @param string $image An HTML 'img' element to be filtered.
- * @return string Converted 'img' element with 'srcset' and 'sizes' added.
- */
-function tevkori_img_add_srcset_and_sizes( $image ) {
-	_deprecated_function( __FUNCTION__, '3.0.0', 'wp_image_add_srcset_and_sizes()' );
-	return wp_image_add_srcset_and_sizes( $image );
-}

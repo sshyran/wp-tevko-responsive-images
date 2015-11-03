@@ -323,49 +323,25 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 	 * @expectedDeprecated tevkori_get_srcset_array
 	 */
 	function test_tevkori_get_srcset_array_no_width() {
-		// Filter wp_get_attachment_image_src() output.
-		add_filter( 'wp_get_attachment_image_src', array( $this, '_test_tevkori_get_srcset_array_no_width_filter' ) );
+		// Filter image_downsize() output.
+		add_filter( 'image_downsize', array( $this, '_filter_image_downsize' ), 10, 3 );
 
 		// Make our attachment.
 		$id = self::create_upload_object( self::$test_file_name );
 		$srcset = tevkori_get_srcset_array( $id, 'medium' );
 
-		/*
-		 * 'tevkori_get_srcset_array()' calls `wp_get_attachment_image_srcset()` which uses
-		 * `wp_get_attachment_image_src()` to get the image size.
-		 * To manipulate the image size for this test we have to use the `wp_get_attachment_image_src` filter,
-		 * but this was only introduced in WP 4.3.
-		 * When testing against older WordPress versions we test 'wp_calculate_image_srcset()' instead.
-		 */
-		if ( has_filter( 'wp_get_attachment_image_src', array( $this, '_test_tevkori_get_srcset_array_no_width_filter' ) ) ) {
-			$srcset = tevkori_get_srcset_array( $id, 'medium' );
-
-			// The srcset should be false.
-			$this->assertFalse( $srcset );
-		} else {
-			// This function call is only because PHPUnit expects a deprecation warning.
-			$ignore = tevkori_get_srcset_array( $id, 'medium' );
-
-			$size_array = array( 0, 0 );
-			$image_meta = wp_get_attachment_metadata( $id );
-			$image_name = $image_meta['file'];
-			$srcset = wp_calculate_image_srcset( $image_name, $size_array, $image_meta );
-
-			// The srcset should be false.
-			$this->assertFalse( $srcset );
-		}
-
+		// The srcset should be false
+		$this->assertFalse( $srcset );
 		// Remove filter.
-		remove_filter( 'wp_get_attachment_image_src', array( $this, '_test_tevkori_get_srcset_array_no_width_filter' ) );
+		remove_filter( 'image_downsize', array( $this, '_filter_image_downsize' ) );
 	}
 
 	/**
-	 * Helper funtion to filter wp_get_attachment_image_src and return zero values for width and height.
+	 * Helper funtion to filter image_downsize and return zero values for width and height.
 	 */
-	public function _test_tevkori_get_srcset_array_no_width_filter( $image ) {
-		$image[1] = 0;
-		$image[2] = 0;
-		return $image;
+	public function _filter_image_downsize( $out, $id, $size ) {
+		$img_url = wp_get_attachment_url($id);
+		return array( $img_url, 0, 0 );
 	}
 
 	/**

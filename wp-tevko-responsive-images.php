@@ -108,10 +108,7 @@ endif;
  * @return array Attributes for image.
  */
 function tevkori_filter_attachment_image_attributes( $attr, $attachment, $size ) {
-	if ( function_exists( 'wp_get_attachment_image_srcset' ) ) {
-		_deprecated_function( __FUNCTION__, '3.0.0', 'wp_get_attachment_image_attributes' );
-		return $attr;
-	}
+	_deprecated_function( __FUNCTION__, '3.0.0', 'wp_get_attachment_image_attributes' );
 
 	// Set srcset and sizes if not already present and both were returned.
 	if ( empty( $attr['srcset'] ) ) {

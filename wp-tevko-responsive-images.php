@@ -100,7 +100,7 @@ function _wp_get_image_size_from_meta( $size_name, $image_meta ) {
 }
 endif;
 
-if ( ! function_exists( 'wp_get_attachment_image_srcset' ) ) :
+
 /**
  * Filter to add 'srcset' and 'sizes' attributes to post thumbnails and gallery images.
  *
@@ -108,6 +108,11 @@ if ( ! function_exists( 'wp_get_attachment_image_srcset' ) ) :
  * @return array Attributes for image.
  */
 function tevkori_filter_attachment_image_attributes( $attr, $attachment, $size ) {
+	if ( function_exists( 'wp_get_attachment_image_srcset' ) ) {
+		_deprecated_function( __FUNCTION__, '3.0.0', 'wp_get_attachment_image_attributes' );
+		return $attr;
+	}
+
 	// Set srcset and sizes if not already present and both were returned.
 	if ( empty( $attr['srcset'] ) ) {
 		$srcset = wp_get_attachment_image_srcset( $attachment->ID, $size );
@@ -126,6 +131,7 @@ function tevkori_filter_attachment_image_attributes( $attr, $attachment, $size )
 }
 add_filter( 'wp_get_attachment_image_attributes', 'tevkori_filter_attachment_image_attributes', 0, 3 );
 
+if ( ! function_exists( 'wp_get_attachment_image_srcset' ) ) :
 /**
  * Retrieves the value for an image attachment's 'srcset' attribute.
  *

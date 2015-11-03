@@ -181,7 +181,6 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 		$id = self::$large_id;
 		$sizes = tevkori_get_srcset_array( $id, 'medium' );
 
-		$sizes = tevkori_get_srcset_array( $id, 'medium' );
 		$year_month = date('Y/m');
 		$image = wp_get_attachment_metadata( $id );
 
@@ -206,7 +205,20 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 		$id = self::$large_id;
 		$sizes = tevkori_get_srcset_array( $id, 'foo' );
 
-		$this->assertFalse( $sizes );
+		$year_month = date('Y/m');
+		$image = wp_get_attachment_metadata( $id );
+
+		foreach( $image['sizes'] as $name => $size ) {
+			// Whitelist the sizes that should be included so we pick up 'medium_large' in 4.4.
+			if ( in_array( $name, array( 'medium', 'medium_large', 'large' ) ) ) {
+				$expected[$size['width']] = 'http://example.org/wp-content/uploads/' . $year_month = date('Y/m') . '/' . $size['file'] . ' ' . $size['width'] . 'w';
+			}
+		}
+
+		// Add the full size width at the end.
+		$expected[$image['width']] = 'http://example.org/wp-content/uploads/' . $image['file'] . ' ' . $image['width'] .'w';
+
+		$this->assertSame( $expected, $sizes );
 	}
 
 	/**

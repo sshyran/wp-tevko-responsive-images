@@ -185,13 +185,15 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 		$year_month = date('Y/m');
 		$image = wp_get_attachment_metadata( $id );
 
-		$expected = array(
-			$image['sizes']['medium']['width'] => 'http://example.org/wp-content/uploads/' . $year_month = date('Y/m') . '/'
-				. $image['sizes']['medium']['file'] . ' ' . $image['sizes']['medium']['width'] . 'w',
-			$image['sizes']['large']['width'] => 'http://example.org/wp-content/uploads/' . $year_month = date('Y/m') . '/'
-				. $image['sizes']['large']['file'] . ' ' . $image['sizes']['large']['width'] . 'w',
-			$image['width'] => 'http://example.org/wp-content/uploads/' . $image['file'] . ' ' . $image['width'] .'w'
-		);
+		foreach( $image['sizes'] as $name => $size ) {
+			// Whitelist the sizes that should be included so we pick up 'medium_large' in 4.4.
+			if ( in_array( $name, array( 'medium', 'medium_large', 'large' ) ) ) {
+				$expected[$size['width']] = 'http://example.org/wp-content/uploads/' . $year_month = date('Y/m') . '/' . $size['file'] . ' ' . $size['width'] . 'w';
+			}
+		}
+
+		// Add the full size width at the end.
+		$expected[$image['width']] = 'http://example.org/wp-content/uploads/' . $image['file'] . ' ' . $image['width'] .'w';
 
 		$this->assertSame( $expected, $sizes );
 	}
@@ -204,19 +206,7 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 		$id = self::$large_id;
 		$sizes = tevkori_get_srcset_array( $id, 'foo' );
 
-		$sizes = tevkori_get_srcset_array( $id, 'foo' );
-		$year_month = date('Y/m');
-		$image = wp_get_attachment_metadata( $id );
-
-		$expected = array(
-			$image['sizes']['medium']['width'] => 'http://example.org/wp-content/uploads/' . $year_month = date('Y/m') . '/'
-				. $image['sizes']['medium']['file'] . ' ' . $image['sizes']['medium']['width'] . 'w',
-			$image['sizes']['large']['width'] => 'http://example.org/wp-content/uploads/' . $year_month = date('Y/m') . '/'
-				. $image['sizes']['large']['file'] . ' ' . $image['sizes']['large']['width'] . 'w',
-			$image['width'] => 'http://example.org/wp-content/uploads/' . $image['file'] . ' ' . $image['width'] .'w'
-		);
-
-		$this->assertSame( $expected, $sizes );
+		$this->assertFalse( $sizes );
 	}
 
 	/**
@@ -234,11 +224,15 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 		$sizes = tevkori_get_srcset_array( $id, 'medium' );
 		$image = wp_get_attachment_metadata( $id );
 
-		$expected = array(
-			$image['sizes']['medium']['width'] => 'http://example.org/wp-content/uploads/' . $image['sizes']['medium']['file'] . ' ' . $image['sizes']['medium']['width'] . 'w',
-			$image['sizes']['large']['width'] => 'http://example.org/wp-content/uploads/' . $image['sizes']['large']['file'] . ' ' . $image['sizes']['large']['width'] . 'w',
-			$image['width'] => 'http://example.org/wp-content/uploads/' . $image['file'] . ' ' . $image['width'] .'w'
-		);
+		foreach( $image['sizes'] as $name => $size ) {
+			// Whitelist the sizes that should be included so we pick up 'medium_large' in 4.4.
+			if ( in_array( $name, array( 'medium', 'medium_large', 'large' ) ) ) {
+				$expected[$size['width']] = 'http://example.org/wp-content/uploads/' . $size['file'] . ' ' . $size['width'] . 'w';
+			}
+		}
+
+		// Add the full size width at the end.
+		$expected[$image['width']] = 'http://example.org/wp-content/uploads/' . $image['file'] . ' ' . $image['width'] .'w';
 
 		$this->assertSame( $expected, $sizes );
 
@@ -374,12 +368,18 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 		$image = wp_get_attachment_metadata( $id );
 		$year_month = date('Y/m');
 
-		$expected = 'srcset="';
-		$expected .= 'http://example.org/wp-content/uploads/' . $year_month = date('Y/m') . '/'
-			. $image['sizes']['medium']['file'] . ' ' . $image['sizes']['medium']['width'] . 'w, ';
-		$expected .='http://example.org/wp-content/uploads/' . $year_month = date('Y/m') . '/'
-			. $image['sizes']['large']['file'] . ' ' . $image['sizes']['large']['width'] . 'w, ';
-		$expected .= 'http://example.org/wp-content/uploads/' . $image['file'] . ' ' . $image['width'] .'w"';
+		$srcset = '';
+
+		foreach( $image['sizes'] as $name => $size ) {
+			// Whitelist the sizes that should be included so we pick up 'medium_large' in 4.4.
+			if ( in_array( $name, array( 'medium', 'medium_large', 'large' ) ) ) {
+				$srcset .= 'http://example.org/wp-content/uploads/' . $year_month = date('Y/m') . '/' . $size['file'] . ' ' . $size['width'] . 'w, ';
+			}
+		}
+		// Add the full size width at the end.
+		$srcset .= 'http://example.org/wp-content/uploads/' . $image['file'] . ' ' . $image['width'] .'w';
+
+		$expected = sprintf( 'srcset="%s"', $srcset );
 
 		$this->assertSame( $expected, $sizes );
 	}

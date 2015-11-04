@@ -260,14 +260,11 @@ function tevkori_filter_content_images( $content ) {
  * Filter to add 'srcset' and 'sizes' attributes to post thumbnails and gallery images.
  *
  * @since 2.3.0
- * @deprecated 3.0.0 Use 'wp_get_attachment_image_attributes'
  * @see 'wp_get_attachment_image_attributes'
  *
  * @return array Attributes for image.
  */
 function tevkori_filter_attachment_image_attributes( $attr, $attachment, $size ) {
-	_deprecated_function( __FUNCTION__, '3.0.0', 'wp_get_attachment_image_attributes' );
-
 	// Set 'srcset' and 'sizes' if not already present and both were returned.
 	if ( empty( $attr['srcset'] ) ) {
 		$srcset = wp_get_attachment_image_srcset( $attachment->ID, $size );

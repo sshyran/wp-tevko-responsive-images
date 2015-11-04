@@ -1,5 +1,4 @@
 <?php
-if ( ! function_exists( '_wp_upload_dir_baseurl' ) ) :
 /**
  * Caches and returns the base URL of the uploads directory.
  *
@@ -18,9 +17,7 @@ function _wp_upload_dir_baseurl() {
 
 	return $baseurl;
 }
-endif;
 
-if ( ! function_exists( '_wp_get_image_size_from_meta' ) ) :
 /**
  * Get the image size as array from its meta data.
  *
@@ -49,9 +46,7 @@ function _wp_get_image_size_from_meta( $size_name, $image_meta ) {
 
 	return false;
 }
-endif;
 
-if ( ! function_exists( 'wp_get_attachment_image_srcset' ) ) :
 /**
  * Retrieves the value for an image attachment's 'srcset' attribute.
  *
@@ -80,9 +75,7 @@ function wp_get_attachment_image_srcset( $attachment_id, $size = 'medium', $imag
 
 	return wp_calculate_image_srcset( $image_url, $size_array, $image_meta, $attachment_id );
 }
-endif;
 
-if ( ! function_exists( 'wp_calculate_image_srcset' ) ) :
 /**
  * A helper function to calculate the image sources to include in a 'srcset' attribute.
  *
@@ -218,9 +211,7 @@ function wp_calculate_image_srcset( $image_name, $size_array, $image_meta, $atta
 
 	return rtrim( $srcset, ', ' );
 }
-endif;
 
-if ( ! function_exists( 'wp_get_attachment_image_sizes' ) ) :
 /**
  * Create 'sizes' attribute value for an image.
  *
@@ -274,9 +265,7 @@ function wp_get_attachment_image_sizes( $size, $image_meta = null, $attachment_i
 	 */
 	return apply_filters( 'wp_get_attachment_image_sizes', $sizes, $size, $image_meta, $attachment_id, $image_url );
 }
-endif;
 
-if ( ! function_exists( 'wp_make_content_images_responsive' ) ) :
 /**
  * Filters 'img' elements in post content to add 'srcset' and 'sizes' attributes.
  *
@@ -364,13 +353,8 @@ function tevkori_get_media_embedded_in_content( $content, $types = null ) {
 
 	return $html;
 }
-endif;
-
-if ( ! has_filter( 'the_content', 'wp_make_content_images_responsive' ) ) :
 add_filter( 'the_content', 'wp_make_content_images_responsive', 5, 1 );
-endif;
 
-if ( ! function_exists( 'wp_image_add_srcset_and_sizes' ) ) :
 /**
  * Adds 'srcset' and 'sizes' attributes to an existing 'img' element.
  *
@@ -450,4 +434,3 @@ function wp_image_add_srcset_and_sizes( $image, $image_meta, $attachment_id ) {
 
 	return $image;
 }
-endif;

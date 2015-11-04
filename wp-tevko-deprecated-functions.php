@@ -3,7 +3,7 @@
  * Returns an array of image sources for a 'srcset' attribute.
  *
  * @since 2.1.0
- * @deprecated 3.0 Use 'wp_get_attachment_image_srcset()'
+ * @deprecated 3.0.0 Use 'wp_get_attachment_image_srcset()'
  * @see 'wp_get_attachment_image_sizes()'
  * @see 'wp_calculate_image_srcset()'
  *
@@ -35,7 +35,7 @@ function tevkori_get_srcset_array( $id, $size = 'medium' ) {
 	 * Filter the output of 'tevkori_get_srcset_array()'.
 	 *
 	 * @since 2.4.0
-	 * @deprecated 3.0 Use 'wp_calculate_image_srcset'
+	 * @deprecated 3.0.0 Use 'wp_calculate_image_srcset'
 	 * @see 'wp_calculate_image_srcset'
 	 *
 	 * @param array        $arr   An array of image sources.
@@ -50,7 +50,7 @@ function tevkori_get_srcset_array( $id, $size = 'medium' ) {
  * Returns the value for a 'srcset' attribute.
  *
  * @since 2.3.0
- * @deprecated 3.0 Use 'wp_get_attachment_image_srcset()'
+ * @deprecated 3.0.0 Use 'wp_get_attachment_image_srcset()'
  * @see 'wp_get_attachment_image_sizes()'
  * @see 'wp_calculate_image_srcset()'
  *
@@ -75,7 +75,7 @@ function tevkori_get_srcset( $id, $size = 'medium' ) {
  * Returns a 'srcset' attribute.
  *
  * @since 2.1.0
- * @deprecated 3.0 Use 'wp_get_attachment_image_srcset()'
+ * @deprecated 3.0.0 Use 'wp_get_attachment_image_srcset()'
  * @see 'wp_get_attachment_image_sizes()'
  * @see 'wp_calculate_image_srcset()'
  *
@@ -102,7 +102,7 @@ function tevkori_get_srcset_string( $id, $size = 'medium' ) {
  * Returns the value for a 'sizes' attribute.
  *
  * @since 2.2.0
- * @deprecated 3.0 Use 'wp_get_attachment_image_sizes()'
+ * @deprecated 3.0.0 Use 'wp_get_attachment_image_sizes()'
  * @see 'wp_get_attachment_image_sizes()'
  *
  * @param int          $id   Image attachment ID.
@@ -155,7 +155,7 @@ function tevkori_get_sizes( $id, $size = 'medium', $args = null ) {
 		* Filter arguments used to create the 'sizes' attribute value.
 		*
 		* @since 2.4.0
-		* @deprecated 3.0 Use 'wp_get_attachment_image_sizes'
+		* @deprecated 3.0.0 Use 'wp_get_attachment_image_sizes'
 		* @see 'wp_get_attachment_image_sizes'
 		*
 		* @param array        $args An array of arguments used to create a 'sizes' attribute.
@@ -215,7 +215,7 @@ function tevkori_get_sizes( $id, $size = 'medium', $args = null ) {
  * Returns a 'sizes' attribute.
  *
  * @since 2.2.0
- * @deprecated 3.0 Use 'wp_get_attachment_image_sizes()'
+ * @deprecated 3.0.0 Use 'wp_get_attachment_image_sizes()'
  * @see 'wp_get_attachment_image_sizes()'
  *
  * @param int          $id   Image attachment ID.
@@ -245,7 +245,7 @@ function tevkori_get_sizes_string( $id, $size = 'medium', $args = null ) {
  * Filter to add 'srcset' and 'sizes' attributes to images in the post content.
  *
  * @since 2.5.0
- * @deprecated 3.0 Use 'wp_make_content_images_responsive()'
+ * @deprecated 3.0.0 Use 'wp_make_content_images_responsive()'
  * @see 'wp_make_content_images_responsive()'
  *
  * @param string $content The raw post content to be filtered.
@@ -260,7 +260,7 @@ function tevkori_filter_content_images( $content ) {
  * Filter to add 'srcset' and 'sizes' attributes to post thumbnails and gallery images.
  *
  * @since 2.3.0
- * @deprecated 3.0 Use 'wp_get_attachment_image_attributes'
+ * @deprecated 3.0.0 Use 'wp_get_attachment_image_attributes'
  * @see 'wp_get_attachment_image_attributes'
  *
  * @return array Attributes for image.

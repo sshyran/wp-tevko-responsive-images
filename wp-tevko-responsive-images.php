@@ -47,7 +47,7 @@ if ( class_exists( 'Imagick' ) ) {
  * previous to 4.4, when the functions were added to core.
  */
 if ( ! function_exists( 'wp_get_attachment_image_srcset' ) ) {
-	require_once( plugin_dir_path( __FILE__ ) . 'wp-tevko-core-responsive-functions.php' );
+	require_once( plugin_dir_path( __FILE__ ) . 'wp-tevko-core-functions.php' );
 }
 
 /**

@@ -54,36 +54,6 @@ if ( ! function_exists( 'wp_get_attachment_image_srcset' ) ) {
 	require_once( plugin_dir_path( __FILE__ ) . 'wp-tevko-core-functions.php' );
 }
 
-/**
- * Filter to add 'srcset' and 'sizes' attributes to post thumbnails and gallery images.
- *
- * @since 2.3.0
- * @deprecated 3.0 Use 'wp_get_attachment_image_attributes'
- * @see 'wp_get_attachment_image_attributes'
- * 
- * @return array Attributes for image.
- */
-function tevkori_filter_attachment_image_attributes( $attr, $attachment, $size ) {
-	_deprecated_function( __FUNCTION__, '3.0.0', 'wp_get_attachment_image_attributes' );
-
-	// Set 'srcset' and 'sizes' if not already present and both were returned.
-	if ( empty( $attr['srcset'] ) ) {
-		$srcset = wp_get_attachment_image_srcset( $attachment->ID, $size );
-		$sizes  = wp_get_attachment_image_sizes( $size, $image_meta = null, $attachment->ID );
-
-		if ( $srcset && $sizes ) {
-			$attr['srcset'] = $srcset;
-
-			if ( empty( $attr['sizes'] ) ) {
-				$attr['sizes'] = $sizes;
-			}
-		}
-	}
-
-	return $attr;
-}
-add_filter( 'wp_get_attachment_image_attributes', 'tevkori_filter_attachment_image_attributes', 0, 3 );
-
 // Enqueue bundled version of the Picturefill library.
 function tevkori_get_picturefill() {
 	wp_enqueue_script( 'picturefill', plugins_url( 'js/picturefill.min.js', __FILE__ ), array(), '3.0.1', true );

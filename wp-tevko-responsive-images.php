@@ -18,9 +18,10 @@
 // Don't load the plugin directly.
 defined( 'ABSPATH' ) or die( "No script kiddies please!" );
 
-// List includes.
-require_once( plugin_dir_path( __FILE__ ) . 'wp-tevko-deprecated-functions.php' );
-
+/*
+ * Include the advanced image compression files.
+ * See readme.md for more information.
+ */
 if ( class_exists( 'Imagick' ) ) {
 	require_once( plugin_dir_path( __FILE__ ) . 'class-respimg.php' );
 	require_once( plugin_dir_path( __FILE__ ) . 'class-wp-image-editor-respimg.php' );
@@ -42,6 +43,9 @@ if ( class_exists( 'Imagick' ) ) {
 	add_filter( 'wp_image_editors', 'tevkori_wp_image_editors' );
 }
 
+// Load the deprecated core functions.
+require_once( plugin_dir_path( __FILE__ ) . 'wp-tevko-deprecated-functions.php' );
+
 /*
  * Load copies of our core functions if the plugin is installed on a version of WordPress
  * previous to 4.4, when the functions were added to core.
@@ -53,13 +57,16 @@ if ( ! function_exists( 'wp_get_attachment_image_srcset' ) ) {
 /**
  * Filter to add 'srcset' and 'sizes' attributes to post thumbnails and gallery images.
  *
+ * @since 2.3.0
+ * @deprecated 3.0 Use 'wp_get_attachment_image_attributes'
  * @see 'wp_get_attachment_image_attributes'
+ * 
  * @return array Attributes for image.
  */
 function tevkori_filter_attachment_image_attributes( $attr, $attachment, $size ) {
 	_deprecated_function( __FUNCTION__, '3.0.0', 'wp_get_attachment_image_attributes' );
 
-	// Set srcset and sizes if not already present and both were returned.
+	// Set 'srcset' and 'sizes' if not already present and both were returned.
 	if ( empty( $attr['srcset'] ) ) {
 		$srcset = wp_get_attachment_image_srcset( $attachment->ID, $size );
 		$sizes  = wp_get_attachment_image_sizes( $size, $image_meta = null, $attachment->ID );

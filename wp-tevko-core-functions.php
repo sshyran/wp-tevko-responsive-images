@@ -326,6 +326,7 @@ function wp_make_content_images_responsive( $content ) {
 
 	return $content;
 }
+add_filter( 'the_content', 'wp_make_content_images_responsive', 5, 1 );
 
 /**
  * Check the content blob for an audio, video, object, embed, or iframe tags.
@@ -367,7 +368,6 @@ function tevkori_get_media_embedded_in_content( $content, $types = null ) {
 
 	return $html;
 }
-add_filter( 'the_content', 'wp_make_content_images_responsive', 5, 1 );
 
 /**
  * Adds 'srcset' and 'sizes' attributes to an existing 'img' element.

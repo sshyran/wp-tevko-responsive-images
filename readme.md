@@ -38,97 +38,71 @@ add_action( 'after_setup_theme', 'custom_theme_setup' );
 
 
 ---
+### Function Reference
 
-#### tevkori_get_sizes( $id, $size, $args )
+#### wp_get_attachment_image_sizes( $size, $image_meta = null, $attachment_id = 0, $image_src = null )
 
-Returns a valid source size value for use in a 'sizes' attribute. The parameters include the ID of the image, the default size of the image, and an array or string containing of size information. The ID parameter is required. [Link](https://github.com/ResponsiveImagesCG/wp-tevko-responsive-images/blob/master/wp-tevko-responsive-images.php#L28)
+Create 'sizes' attribute value for an image.
 
-***Usage Example***
+**Return:** (string|bool) A valid source size value for use in a 'sizes' attribute or false.
+
+
+##### Parameters
+
+**$size** (array|string)
+Image size. Accepts any valid image size name ('thumbnail', 'medium', etc.), or an array of width and height values in pixels (in that order).
+
+**$image_meta** (array)            (Optional) The image meta data as returned by 'wp_get_attachment_metadata()'.
+
+**$attachment_id** (int)
+(Optional) Image attachment ID. Either `$image_meta` or `$attachment_id` is needed when using the image size name as argument for `$size`.
+
+**$image_src** (string)
+(Optional) The URL to the image file.
+
+##### Usage Example
 
 ```
-<img src="myimg.png" sizes="<?php echo tevkori_get_sizes( 11, 'medium' ); ?>" >
+<img src="myimg.png" sizes="<?php echo esc_attr( wp_get_attachment_image_sizes( 'medium' ) ); ?>" >
 ```
 
 By default, the sizes attribute will be declared as 100% of the viewport width when the viewport width is smaller than the width of the image, or to the width of the image itself when the viewport is larger than the image. In other words, this:
 
 `(max-width: {{image-width}}) 100vw, {{image-width}}`
 
-You can override those defaults by passing your own size values as set of arrays to the `$args` parameter.
-
-*Example:*
-
-```
-$args = array(
-  'sizes' => array(
-    array(
-      'size_value' 	=> '10em',
-      'mq_value'		=> '60em',
-      'mq_name'			=> 'min-width'
-    ),
-    array(
-      'size_value' 	=> '20em',
-      'mq_value'		=> '30em',
-      'mq_name'			=> 'min-width'
-    ),
-    array(
-      'size_value'	=> 'calc(100vm - 30px)'
-    ),
-  )
-);
-
-$sizes = tevkori_get_sizes( $id, 'medium', $args );
-```
-
-Which would output a sizes value of:
-`(min-width: 60em) 10em, (min-width: 30em) 20em, calc(100vm - 30px)`
+You can override those defaults by adding a filter to `wp_get_attachment_image_sizes`.
 
 ---
 
-#### tevkori_get_sizes_string( $id, $size, $args)
+#### wp_get_attachment_image_srcset( $attachment_id, $size = 'medium', $image_meta = null )
 
-Returns A full 'sizes' attribute. The parameters include the ID of the image, the default size of the image, and an array or string containing of size information. The ID parameter is required.
+Retrieves the value for an image attachment's 'srcset' attribute.
 
-***Usage Example***
+**Return:** (string|bool) A 'srcset' value string or false.
+
+##### Parameters
+
+**$attachment_id** (int)
+Image attachment ID.
+
+**$size** (array|string)
+Image size. Accepts any valid image size, or an array of width and height values in pixels (in that order). Default 'medium'.
+
+**$image_meta** (array)
+(Optional) The image meta data as returned by 'wp_get_attachment_metadata()'.
+
+
+##### Usage Example
 
 ```
-<img src="myimg.png" <?php echo tevkori_get_sizes_string( 11, 'medium' ); ?> >
-```
-
----
-#### tevkori_get_srcset_array( $id, $size )
-
-Returns an array of image source candidates for use in a 'srcset' attribute. The parameters include the ID of the image, the default size of the image, and An array of of srcset values. The ID parameter is required. [Link](https://github.com/ResponsiveImagesCG/wp-tevko-responsive-images/blob/master/wp-tevko-responsive-images.php#L132)
-
-***Usage Example***
-
-```
-$sources = tevkori_get_srcset_array( 11, 'medium' );
-
-// Optionally remove a specific source from the srcset list.
-foreach( $sources as $key => $source ) {
-	if ( strpos( $source, '300w' ) ) {
-		unset( $s[$key] );
-	}
-}
-
-<img src="myimg.png" srcset="<?php implode( ', ', $sources ); ?>" >
+<img src="myimg.png" srcset="<?php echo esc_attr( wp_get_attachment_image_srcset( 11, 'medium' ) ); ?>" sizes="{{custom sizes attribute}}" >
 ```
 
 ---
 
-#### tevkori_get_srcset_string( $id, $size )
+### Dependencies
 
-Returns A full 'srcset' attribute. The parameters include the ID of the image and its default size. The ID parameter is required. [Link](https://github.com/ResponsiveImagesCG/wp-tevko-responsive-images/blob/master/wp-tevko-responsive-images.php#L196)
-
-***Usage Example***
-
-```
-<img src="myimg.png" <?php echo tevkori_get_srcset_string( 11, 'medium' ); ?> >
-```
-
-**Dependencies**
-
-The only external dependency included in this plugin is [Picturefill](http://scottjehl.github.io/picturefill/) - v2.3.0. If you would like to remove Picturefill (see notes about [browser support](http://scottjehl.github.io/picturefill/#support)), add the following to your functions.php file:
+The only external dependency included in this plugin is [Picturefill](http://scottjehl.github.io/picturefill/) - v3.0.1. If you would like to remove Picturefill (see notes about [browser support](http://scottjehl.github.io/picturefill/#support)), add the following to your functions.php file:
 
     function mytheme_dequeue_scripts() {
       wp_dequeue_script('picturefill');

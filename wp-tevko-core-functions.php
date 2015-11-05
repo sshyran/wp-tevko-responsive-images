@@ -362,16 +362,6 @@ function tevkori_get_media_embedded_in_content( $content, $types = null ) {
 
 	if ( preg_match_all( '#<(?P<tag>' . $tags . ')[^<]*?(?:>[\s\S]*?<\/(?P=tag)>|\s*\/>)#', $content, $matches ) ) {
 		foreach ( $matches[0] as $match ) {
-
-			/*
-			 * Backward compatibility.
-			 *
-			 * Prior to version 2.5 a 'srcset' and 'data-sizes' attribute
-			 * were added to the image while inserting the image in the content.
-			 * We replace the 'data-sizes' attribute by a 'sizes' attribute.
-			 */
-			$match = str_replace( ' data-sizes="', ' sizes="', $match );
-
 			$html[] = $match;
 		}
 	}

@@ -30,12 +30,12 @@ As of version 2.5.0, the plugin adds `srcset` and `sizes` attributes to images o
 == Changelog ==
 
 = 3.0.0 =
-* Deprecates core functions that have been merged into WordPress core in 4.4.
+* Deprecates all core functions that will be merged into WordPress core in 4.4.
 * Adds compatibility shims for sites using the plugin's internal functions and hooks.
-* Turns display filter callback into a general utility function for adding srcset and sizes attributes image HTML.
-* Upgrade to Picturefill 3.0.1
-* Avoids calling `image_downsize()` when calculating sizes attributes to speed things up.
+* Adds a new display filter callback which can be use as general utility function for adding srcset and sizes attributes.
 * Fixes a bug when `wp_get_attachment_metadata()` failed to return an array.
+* Update our tests to be compatible with WordPress 4.4
+* Upgrade to Picturefill 3.0.1
 * Clean up inline docs.
 
 = 2.5.2 =

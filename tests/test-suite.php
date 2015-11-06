@@ -1,110 +1,94 @@
 <?php
 
-class SampleTest extends WP_UnitTestCase {
+class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 
-	function tearDown() {
-		// Remove all uploads.
-		$this->remove_added_uploads();
-		parent::tearDown();
+	protected static $large_id;
+
+	protected static $test_file_name;
+
+	public static function setUpBeforeClass() {
+		self::$test_file_name = dirname(__FILE__) . '/data/test-large.png';
+		self::$large_id = self::create_upload_object( self::$test_file_name );
 	}
 
-	/**
-	 * Helper function that creates an attachment in the DB.
-	 * Copied from Tests_Post_Attachments Class in the WP Core test suite.
-	 */
-	private function _make_attachment( $upload, $parent_post_id = 0 ) {
+	public static function tearDownAfterClass() {
+		wp_delete_attachment( self::$large_id );
+	}
 
+	public static function create_upload_object( $filename, $parent = 0 ) {
+		$contents = file_get_contents($filename);
+		$upload = wp_upload_bits(basename($filename), null, $contents);
 		$type = '';
-		if ( !empty($upload['type']) ) {
+
+		if ( ! empty($upload['type'] ) ) {
 			$type = $upload['type'];
 		} else {
 			$mime = wp_check_filetype( $upload['file'] );
-			if ($mime)
+			if ( $mime )
 				$type = $mime['type'];
 		}
 
 		$attachment = array(
-			'post_title' => basename( $upload['file'] ),
-			'post_content' => '',
-			'post_type' => 'attachment',
-			'post_parent' => $parent_post_id,
+			'post_title'     => basename( $upload['file'] ),
+			'post_content'   => '',
+			'post_type'      => 'attachment',
+			'post_parent'    => $parent,
 			'post_mime_type' => $type,
-			'guid' => $upload[ 'url' ],
+			'guid'           => $upload[ 'url' ],
 		);
 
-		// Save the data
-		$id = wp_insert_attachment( $attachment, $upload[ 'file' ], $parent_post_id );
+		// Save the data.
+		$id = wp_insert_attachment( $attachment, $upload[ 'file' ], $parent );
 		wp_update_attachment_metadata( $id, wp_generate_attachment_metadata( $id, $upload['file'] ) );
-
-		return $this->ids[] = $id;
-
-	}
-
-	/**
-	 * Helper function to create an attachment from a file
-	 *
-	 * @uses _make_attachment
-	 *
-	 * @param 	string 			Optional. A path to a file. Default: DIR_TESTDATA.'/images/canola.JPG'.
-	 * @return 	int|bool 		An attachment ID or false.
-	 */
-	private function _test_img( $file = null ) {
-
-		$filename = $file ? $file : ( dirname(__FILE__) . '/data/test-large.png' );
-		$contents = file_get_contents($filename);
-
-		$upload = wp_upload_bits(basename($filename), null, $contents);
-		$this->assertTrue( empty($upload['error']) );
-
-		$id = $this->_make_attachment($upload);
 
 		return $id;
 	}
 
 	/* OUR TESTS */
 
+	/**
+	 * @expectedDeprecated tevkori_get_sizes
+	 */
 	function test_tevkori_get_sizes() {
-		// make an image
-		$id = $this->_test_img();
+		// Make an image.
+		$id = self::$large_id;
 
 		global $content_width;
 
-		// test sizes against the default WP sizes
-		$intermediates = array('thumbnail', 'medium', 'large');
+		// Test sizes against the default WP sizes.
+		$intermediates = array( 'thumbnail', 'medium', 'large' );
 
 		foreach( $intermediates as $int ) {
 			$width = get_option( $int . '_size_w' );
 
-			// the sizes width gets constrained to $content_width by default
-			if ( $content_width > 0 ) {
-				$width = ( $width > $content_width ) ? $content_width : $width;
-			}
-
 			$expected = '(max-width: ' . $width . 'px) 100vw, ' . $width . 'px';
 			$sizes = tevkori_get_sizes( $id, $int );
 
-			$this->assertSame($expected, $sizes);
+			$this->assertSame( $expected, $sizes );
 		}
 	}
 
+	/**
+	 * @expectedDeprecated tevkori_get_sizes
+	 */
 	function test_tevkori_get_sizes_with_args() {
-		// make an image
-		$id = $this->_test_img();
+		// Make an image.
+		$id = self::$large_id;
 
 		$args = array(
 			'sizes' => array(
 				array(
-					'size_value' 	=> '10em',
-					'mq_value'		=> '60em',
-					'mq_name'			=> 'min-width'
+					'size_value' => '10em',
+					'mq_value'   => '60em',
+					'mq_name'    => 'min-width'
 				),
 				array(
-					'size_value' 	=> '20em',
-					'mq_value'		=> '30em',
-					'mq_name'			=> 'min-width'
+					'size_value' => '20em',
+					'mq_value'   => '30em',
+					'mq_name'    => 'min-width'
 				),
 				array(
-					'size_value'	=> 'calc(100vm - 30px)'
+					'size_value' => 'calc(100vm - 30px)'
 				),
 			)
 		);
@@ -112,19 +96,22 @@ class SampleTest extends WP_UnitTestCase {
 		$expected = '(min-width: 60em) 10em, (min-width: 30em) 20em, calc(100vm - 30px)';
 		$sizes = tevkori_get_sizes( $id, 'medium', $args );
 
-		$this->assertSame($expected, $sizes);
+		$this->assertSame( $expected, $sizes );
 	}
 
+	/**
+	 * @expectedDeprecated tevkori_get_sizes
+	 */
 	function test_filter_tevkori_get_sizes_string() {
 		// Add our test filter.
 		add_filter( 'tevkori_image_sizes_args', array( $this, '_test_tevkori_image_sizes_args' ) );
 
 		// Set up our test.
-		$id = $this->_test_img();
+		$id = self::$large_id;
 		$sizes = tevkori_get_sizes($id, 'medium');
 
 		// Evaluate that the sizes returned is what we expected.
-		$this->assertSame( $sizes, '100vm');
+		$this->assertSame( $sizes, '100vm' );
 
 		remove_filter( 'tevkori_image_sizes_args', array( $this, '_test_tevkori_image_sizes_args' ) );
 	}
@@ -137,12 +124,15 @@ class SampleTest extends WP_UnitTestCase {
 		return $args;
 	}
 
+	/**
+	 * @expectedDeprecated tevkori_get_srcset_array
+	 */
 	function test_filter_tevkori_srcset_array() {
-		// Add test filter
+		// Add test filter.
 		add_filter( 'tevkori_srcset_array', array( $this, '_test_tevkori_srcset_array' ) );
 
 		// Set up our test.
-		$id = $this->_test_img();
+		$id = self::$large_id;
 		$sizes = tevkori_get_srcset_array($id, 'medium');
 
 		// Evaluate that the sizes returned is what we expected.
@@ -150,91 +140,111 @@ class SampleTest extends WP_UnitTestCase {
 			$this->assertTrue( $width <= 500 );
 		}
 
-		// Remove test filter
+		// Remove test filter.
 		remove_filter( 'tevkori_srcset_array', array( $this, '_test_tevkori_srcset_array' ) );
 	}
 
 	/**
 	 * A test filter for tevkori_get_srcset_array() that removes any sources
-	 * that are larger that 500px wide.
+	 * that are larger than 500px wide.
 	 */
 	function _test_tevkori_srcset_array( $array ) {
 		foreach ( $array as $size => $file ) {
 			if ( $size > 500 ) {
-				unset( $array[$size] );
+				unset( $array[ $size ] );
 			}
 		}
 		return $array;
 	}
 
+	/**
+	 * @expectedDeprecated tevkori_get_sizes
+	 * @expectedDeprecated tevkori_get_sizes_string
+	 */
 	function test_tevkori_get_sizes_string() {
-		// make an image
-		$id = $this->_test_img();
+		// Make an image.
+		$id = self::$large_id;
 
-		$sizes = tevkori_get_sizes($id, 'medium');
+		$sizes = tevkori_get_sizes( $id, 'medium' );
 		$sizes_string = tevkori_get_sizes_string( $id, 'medium' );
 
 		$expected = 'sizes="' . $sizes . '"';
 
-		$this->assertSame( $expected, $sizes_string);
+		$this->assertSame( $expected, $sizes_string );
 	}
 
+	/**
+	 * @expectedDeprecated tevkori_get_srcset_array
+	 */
 	function test_tevkori_get_srcset_array() {
 		// make an image
-		$id = $this->_test_img();
+		$id = self::$large_id;
 		$sizes = tevkori_get_srcset_array( $id, 'medium' );
 
 		$year_month = date('Y/m');
 		$image = wp_get_attachment_metadata( $id );
 
-		$expected = array(
-			$image['sizes']['medium']['width'] => 'http://example.org/wp-content/uploads/' . $year_month = date('Y/m') . '/'
-				. $image['sizes']['medium']['file'] . ' ' . $image['sizes']['medium']['width'] . 'w',
-			$image['sizes']['large']['width'] => 'http://example.org/wp-content/uploads/' . $year_month = date('Y/m') . '/'
-				. $image['sizes']['large']['file'] . ' ' . $image['sizes']['large']['width'] . 'w',
-			$image['width'] => 'http://example.org/wp-content/uploads/' . $image['file'] . ' ' . $image['width'] .'w'
-		);
+		foreach( $image['sizes'] as $name => $size ) {
+			// Whitelist the sizes that should be included so we pick up 'medium_large' in 4.4.
+			if ( in_array( $name, array( 'medium', 'medium_large', 'large' ) ) ) {
+				$expected[$size['width']] = 'http://example.org/wp-content/uploads/' . $year_month = date('Y/m') . '/' . $size['file'] . ' ' . $size['width'] . 'w';
+			}
+		}
+
+		// Add the full size width at the end.
+		$expected[$image['width']] = 'http://example.org/wp-content/uploads/' . $image['file'] . ' ' . $image['width'] .'w';
 
 		$this->assertSame( $expected, $sizes );
 	}
 
+	/**
+	 * @expectedDeprecated tevkori_get_srcset_array
+	 */
 	function test_tevkori_get_srcset_array_random_size_name() {
-		// make an image
-		$id = $this->_test_img();
+		// Make an image.
+		$id = self::$large_id;
 		$sizes = tevkori_get_srcset_array( $id, 'foo' );
 
 		$year_month = date('Y/m');
 		$image = wp_get_attachment_metadata( $id );
 
-		$expected = array(
-			$image['sizes']['medium']['width'] => 'http://example.org/wp-content/uploads/' . $year_month = date('Y/m') . '/'
-				. $image['sizes']['medium']['file'] . ' ' . $image['sizes']['medium']['width'] . 'w',
-			$image['sizes']['large']['width'] => 'http://example.org/wp-content/uploads/' . $year_month = date('Y/m') . '/'
-				. $image['sizes']['large']['file'] . ' ' . $image['sizes']['large']['width'] . 'w',
-			$image['width'] => 'http://example.org/wp-content/uploads/' . $image['file'] . ' ' . $image['width'] .'w'
-		);
+		foreach( $image['sizes'] as $name => $size ) {
+			// Whitelist the sizes that should be included so we pick up 'medium_large' in 4.4.
+			if ( in_array( $name, array( 'medium', 'medium_large', 'large' ) ) ) {
+				$expected[$size['width']] = 'http://example.org/wp-content/uploads/' . $year_month = date('Y/m') . '/' . $size['file'] . ' ' . $size['width'] . 'w';
+			}
+		}
+
+		// Add the full size width at the end.
+		$expected[$image['width']] = 'http://example.org/wp-content/uploads/' . $image['file'] . ' ' . $image['width'] .'w';
 
 		$this->assertSame( $expected, $sizes );
 	}
 
+	/**
+	 * @expectedDeprecated tevkori_get_srcset_array
+	 */
 	function test_tevkori_get_srcset_array_no_date_upoads() {
-		// Save the current setting for uploads folders
+		// Save the current setting for uploads folders.
 		$uploads_use_yearmonth_folders = get_option( 'uploads_use_yearmonth_folders' );
 
-		// Disable date organized uploads
+		// Disable date organized uploads.
 		update_option( 'uploads_use_yearmonth_folders', 0 );
 
-		// make an image
-		$id = $this->_test_img();
+		// Make an image.
+		$id = self::create_upload_object( self::$test_file_name );
 		$sizes = tevkori_get_srcset_array( $id, 'medium' );
-
 		$image = wp_get_attachment_metadata( $id );
 
-		$expected = array(
-			$image['sizes']['medium']['width'] => 'http://example.org/wp-content/uploads/' . $image['sizes']['medium']['file'] . ' ' . $image['sizes']['medium']['width'] . 'w',
-			$image['sizes']['large']['width'] => 'http://example.org/wp-content/uploads/' . $image['sizes']['large']['file'] . ' ' . $image['sizes']['large']['width'] . 'w',
-			$image['width'] => 'http://example.org/wp-content/uploads/' . $image['file'] . ' ' . $image['width'] .'w'
-		);
+		foreach( $image['sizes'] as $name => $size ) {
+			// Whitelist the sizes that should be included so we pick up 'medium_large' in 4.4.
+			if ( in_array( $name, array( 'medium', 'medium_large', 'large' ) ) ) {
+				$expected[$size['width']] = 'http://example.org/wp-content/uploads/' . $size['file'] . ' ' . $size['width'] . 'w';
+			}
+		}
+
+		// Add the full size width at the end.
+		$expected[$image['width']] = 'http://example.org/wp-content/uploads/' . $image['file'] . ' ' . $image['width'] .'w';
 
 		$this->assertSame( $expected, $sizes );
 
@@ -242,11 +252,17 @@ class SampleTest extends WP_UnitTestCase {
 		update_option( 'uploads_use_yearmonth_folders', $uploads_use_yearmonth_folders );
 	}
 
+	/**
+	 * @expectedDeprecated tevkori_get_srcset
+	 * @expectedDeprecated tevkori_get_srcset_array
+	 */
 	function test_tevkori_get_srcset_single_srcset() {
-		// make an image
-		$id = $this->_test_img();
-		// In our tests, thumbnails would only return a single srcset candidate,
-		// in which case we don't bother returning a srcset array.
+		// Make an image.
+		$id = self::$large_id;
+		/*
+		 * In our tests, thumbnails would only return a single srcset candidate,
+		 * in which case we don't bother returning a srcset array.
+		 */
 		$sizes = tevkori_get_srcset( $id, 'thumbnail' );
 
 		$this->assertTrue( 1 === count( tevkori_get_srcset_array( $id, 'thumbnail' ) ) );
@@ -256,13 +272,16 @@ class SampleTest extends WP_UnitTestCase {
 	/**
 	 * Test for filtering out leftover sizes after an image is edited.
 	 * @group 155
+	 * @expectedDeprecated tevkori_get_srcset_array
 	 */
 	function test_tevkori_get_srcset_array_with_edits() {
 		// Make an image.
-		$id = $this->_test_img();
+		$id = self::$large_id;
 
-		// For this test we're going to mock metadata changes from an edit.
-		// Start by getting the attachment metadata.
+		/*
+		 * For this test we're going to mock metadata changes from an edit.
+		 * Start by getting the attachment metadata.
+		 */
 		$meta = wp_get_attachment_metadata( $id );
 
 		// Mimick hash generation method used in wp_save_image().
@@ -288,53 +307,67 @@ class SampleTest extends WP_UnitTestCase {
 		}
 	}
 
+	/**
+	 * @expectedDeprecated tevkori_get_srcset_array
+	 */
 	function test_tevkori_get_srcset_array_false() {
-		// make an image
-		$id = $this->_test_img();
+		// Make an image.
+		$id = self::$large_id;
 		$sizes = tevkori_get_srcset_array( 99999, 'foo' );
 
-		// For canola.jpg we should return
+		// For canola.jpg we should return.
 		$this->assertFalse( $sizes );
 	}
 
+	/**
+	 * @expectedDeprecated tevkori_get_srcset_array
+	 */
 	function test_tevkori_get_srcset_array_no_width() {
 		// Filter image_downsize() output.
-		add_filter( 'wp_generate_attachment_metadata', array( $this, '_test_tevkori_get_srcset_array_no_width_filter' ) );
+		add_filter( 'image_downsize', array( $this, '_filter_image_downsize' ), 10, 3 );
 
-		// Make our attachement.
-		$id = $this->_test_img();
+		// Make our attachment.
+		$id = self::create_upload_object( self::$test_file_name );
 		$srcset = tevkori_get_srcset_array( $id, 'medium' );
 
 		// The srcset should be false
 		$this->assertFalse( $srcset );
-
 		// Remove filter.
-		remove_filter( 'wp_generate_attachment_metadata', array( $this, '_test_tevkori_get_srcset_array_no_width_filter' ) );
+		remove_filter( 'image_downsize', array( $this, '_filter_image_downsize' ) );
 	}
 
 	/**
 	 * Helper funtion to filter image_downsize and return zero values for width and height.
 	 */
-	public function _test_tevkori_get_srcset_array_no_width_filter( $meta ) {
-		$meta['sizes']['medium']['width'] = 0;
-		$meta['sizes']['medium']['height'] = 0;
-		return $meta;
+	public function _filter_image_downsize( $out, $id, $size ) {
+		$img_url = wp_get_attachment_url($id);
+		return array( $img_url, 0, 0 );
 	}
 
+	/**
+	 * @expectedDeprecated tevkori_get_srcset_string
+	 */
 	function test_tevkori_get_srcset_string() {
-		// make an image
-		$id = $this->_test_img();
+		// Make an image.
+		$id = self::$large_id;
 		$sizes = tevkori_get_srcset_string( $id, 'full-size' );
 
+		$sizes = tevkori_get_srcset_string( $id, 'full' );
 		$image = wp_get_attachment_metadata( $id );
 		$year_month = date('Y/m');
 
-		$expected = 'srcset="';
-		$expected .= 'http://example.org/wp-content/uploads/' . $year_month = date('Y/m') . '/'
-			. $image['sizes']['medium']['file'] . ' ' . $image['sizes']['medium']['width'] . 'w, ';
-		$expected .='http://example.org/wp-content/uploads/' . $year_month = date('Y/m') . '/'
-			. $image['sizes']['large']['file'] . ' ' . $image['sizes']['large']['width'] . 'w, ';
-		$expected .= 'http://example.org/wp-content/uploads/' . $image['file'] . ' ' . $image['width'] .'w"';
+		$srcset = '';
+
+		foreach( $image['sizes'] as $name => $size ) {
+			// Whitelist the sizes that should be included so we pick up 'medium_large' in 4.4.
+			if ( in_array( $name, array( 'medium', 'medium_large', 'large' ) ) ) {
+				$srcset .= 'http://example.org/wp-content/uploads/' . $year_month = date('Y/m') . '/' . $size['file'] . ' ' . $size['width'] . 'w, ';
+			}
+		}
+		// Add the full size width at the end.
+		$srcset .= 'http://example.org/wp-content/uploads/' . $image['file'] . ' ' . $image['width'] .'w';
+
+		$expected = sprintf( 'srcset="%s"', $srcset );
 
 		$this->assertSame( $expected, $sizes );
 	}
@@ -343,13 +376,13 @@ class SampleTest extends WP_UnitTestCase {
 	 * @group 159
 	 */
 	function test_tevkori_filter_attachment_image_attributes() {
-		// Make image.
-		$id = $this->_test_img();
+		// Make an image.
+		$id = self::$large_id;
 
 		// Get attachment post data.
 		$attachment = get_post( $id );
 		$image = wp_get_attachment_image_src( $id, 'medium' );
-		list($src, $width, $height) = $image;
+		list( $src, $width, $height ) = $image;
 
 		// Create dummy attributes array.
 		$attr = array(
@@ -370,13 +403,13 @@ class SampleTest extends WP_UnitTestCase {
 	 * @group 159
 	 */
 	function test_tevkori_filter_attachment_image_attributes_thumbnails() {
-		// Make image.
-		$id = $this->_test_img();
+		// Make an image.
+		$id = self::$large_id;
 
 		// Get attachment post data.
 		$attachment = get_post( $id );
 		$image = wp_get_attachment_image_src( $id, 'thumbnail' );
-		list($src, $width, $height) = $image;
+		list( $src, $width, $height ) = $image;
 
 		// Create dummy attributes array.
 		$attr = array(
@@ -395,10 +428,13 @@ class SampleTest extends WP_UnitTestCase {
 
 	/**
 	 * @group 170
+	 * @expectedDeprecated tevkori_get_srcset_string
+	 * @expectedDeprecated tevkori_get_sizes_string
+	 * @expectedDeprecated tevkori_filter_content_images
 	 */
 	function test_tevkori_filter_content_images() {
-		// Make image.
-		$id = $this->_test_img();
+		// Make an image.
+		$id = self::$large_id;
 
 		$srcset = tevkori_get_srcset_string( $id, 'medium' );
 		$sizes = tevkori_get_sizes_string( $id, 'medium' );
@@ -408,9 +444,9 @@ class SampleTest extends WP_UnitTestCase {
 		$img_no_size = str_replace( 'size-', '', $img );
 		$img_no_size_id = str_replace( 'wp-image-', 'id-', $img_no_size );
 
-		// Manually add srcset and sizes to the markup from get_image_tag();
-		$respimg = preg_replace('|<img ([^>]+) />|', '<img $1 ' . $srcset . ' ' . $sizes . ' />', $img);
-		$respimg_no_size = preg_replace('|<img ([^>]+) />|', '<img $1 ' . $srcset . ' ' . $sizes . ' />', $img_no_size);
+		// Manually add srcset and sizes to the markup from get_image_tag().
+		$respimg = preg_replace('|<img ([^>]+) />|', '<img $1 ' . $srcset . ' ' . $sizes . ' />', $img );
+		$respimg_no_size = preg_replace('|<img ([^>]+) />|', '<img $1 ' . $srcset . ' ' . $sizes . ' />', $img_no_size );
 
 		$content = '<p>Welcome to WordPress!  This post contains important information.  After you read it, you can make it private to hide it from visitors but still have the information handy for future reference.</p>
 			<p>First things first:</p>
@@ -448,10 +484,11 @@ class SampleTest extends WP_UnitTestCase {
 
 	/**
 	 * @group 170
+	 * @expectedDeprecated tevkori_filter_content_images
 	 */
 	function test_tevkori_filter_content_images_with_preexisting_srcset() {
-		// Make image.
-		$id = $this->_test_img();
+		// Make an image.
+		$id = self::$large_id;
 
 		// Generate HTML and add a dummy srcset attribute.
 		$image_html = get_image_tag( $id, '', '', '', 'medium' );

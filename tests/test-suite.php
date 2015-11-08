@@ -61,6 +61,8 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 		foreach( $intermediates as $int ) {
 			$width = get_option( $int . '_size_w' );
 
+			$width = ( $width <= $content_width ) ? $width : $content_width;
+
 			$expected = '(max-width: ' . $width . 'px) 100vw, ' . $width . 'px';
 			$sizes = tevkori_get_sizes( $id, $int );
 

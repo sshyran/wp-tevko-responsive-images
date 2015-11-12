@@ -281,3 +281,24 @@ function tevkori_filter_attachment_image_attributes( $attr, $attachment, $size )
 
 	return $attr;
 }
+
+if ( has_filter( 'wp_get_attachment_image_sizes' ) ) :
+function wp_get_attachment_image_sizes_filter_shim( $sizes, $size, $image_src, $image_meta, $attachment_id ) {
+	/**
+	 * Filter the output of 'wp_get_attachment_image_sizes()'.
+	 *
+	 * @since 3.0.0
+	 * @deprecated 3.1.0 Use 'wp_calculate_image_sizes'
+	 * @see 'wp_calculate_image_sizes'
+	 *
+	 * @param string       $sizes         A source size value for use in a 'sizes' attribute.
+	 * @param array|string $size          Image size. Image size name, or an array of width and height
+	 *                                    values in pixels (in that order).
+	 * @param array        $image_meta    The image meta data as returned by 'wp_get_attachment_metadata()'.
+	 * @param int          $attachment_id Image attachment ID of the original image.
+	 * @param string       $image_src     Optional. The URL to the image file.
+	 */
+	 return apply_filters( 'wp_get_attachment_image_sizes', $sizes, $size, $image_meta, $attachment_id, $image_src );
+}
+add_filter( 'wp_calculate_image_sizes', 'wp_get_attachment_image_sizes_filter_shim', 10, 5 );
+endif;

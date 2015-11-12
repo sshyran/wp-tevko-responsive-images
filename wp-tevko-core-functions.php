@@ -259,7 +259,7 @@ function wp_get_attachment_image_sizes( $attachment_id, $size = 'medium', $image
 /**
  * Create 'sizes' attribute value for an image.
  *
- * @since 3.0.0
+ * @since 3.1.0
  *
  * @param array|string $size          Image size to retrieve. Accepts any valid image size, or an array
  *                                    of width and height values in pixels (in that order). Default 'medium'.
@@ -298,7 +298,7 @@ function wp_calculate_image_sizes( $size, $image_src, $image_meta, $attachment_i
 	/**
 	 * Filter the output of 'wp_calculate_image_sizes()'.
 	 *
-	 * @since 3.0.0
+	 * @since 3.1.0
 	 *
 	 * @param string       $sizes         A source size value for use in a 'sizes' attribute.
 	 * @param array|string $size          Requested size. Image size or array of width and height values

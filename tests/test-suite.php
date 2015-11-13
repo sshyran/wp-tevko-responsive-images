@@ -445,10 +445,12 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 		$img = get_image_tag( $id, '', '', '', 'medium' );
 		$img_no_size = str_replace( 'size-', '', $img );
 		$img_no_size_id = str_replace( 'wp-image-', 'id-', $img_no_size );
+		$img_with_sizes = str_replace( '<img ', '<img sizes="99vw" ', $img );
 
 		// Manually add srcset and sizes to the markup from get_image_tag().
 		$respimg = preg_replace('|<img ([^>]+) />|', '<img $1 ' . $srcset . ' ' . $sizes . ' />', $img );
 		$respimg_no_size = preg_replace('|<img ([^>]+) />|', '<img $1 ' . $srcset . ' ' . $sizes . ' />', $img_no_size );
+		$respimg_with_sizes = preg_replace('|<img ([^>]+) />|', '<img $1 ' . $srcset . ' />', $img_with_sizes );
 
 		$content = '<p>Welcome to WordPress!  This post contains important information.  After you read it, you can make it private to hide it from visitors but still have the information handy for future reference.</p>
 			<p>First things first:</p>
@@ -476,10 +478,12 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 			<li>Modify and prettify your website&#8217;s links at <a href="http://wordpress.org" title="For example, select a link structure like: http://example.com/1999/12/post-name">Settings &#8250; Permalinks</a></li>
 			<li>Import content from another system or WordPress site at <a href="http://wordpress.org" title="WordPress comes with importers for the most common publishing systems">Tools &#8250; Import</a></li>
 			<li>Find answers to your questions at the <a href="http://wordpress.orgs" title="The official WordPress documentation, maintained by the WordPress community">WordPress Codex</a></li>
-			</ul>';
+			</ul>
 
-		$content_unfiltered = sprintf( $content, $img, $img_no_size, $img_no_size_id );
-		$content_filtered = sprintf( $content, $respimg, $respimg_no_size, $img_no_size_id );
+			%4$s';
+
+		$content_unfiltered = sprintf( $content, $img, $img_no_size, $img_no_size_id, $img_with_sizes );
+		$content_filtered = sprintf( $content, $respimg, $respimg_no_size, $img_no_size_id, $respimg_with_sizes );
 
 		$this->assertSame( $content_filtered, tevkori_filter_content_images( $content_unfiltered ) );
 	}

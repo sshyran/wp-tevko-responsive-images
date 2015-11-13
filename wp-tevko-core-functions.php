@@ -326,7 +326,7 @@ function wp_make_content_images_responsive( $content ) {
 	$selected_images = $attachment_ids = array();
 
 	foreach( $images as $image ) {
-		if ( false === strpos( $image, ' srcset="' ) && preg_match( '/wp-image-([0-9]+)/i', $image, $class_id ) &&
+		if ( false === strpos( $image, ' srcset=' ) && preg_match( '/wp-image-([0-9]+)/i', $image, $class_id ) &&
 			( $attachment_id = absint( $class_id[1] ) ) ) {
 
 			/*

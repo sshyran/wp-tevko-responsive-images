@@ -73,6 +73,7 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 	/**
 	 * @expectedDeprecated tevkori_get_sizes
 	 * @expectedException PHPUnit_Framework_Error_Notice
+	 * @group 226
 	 */
 	function test_tevkori_get_sizes_with_args() {
 		// Make an image.
@@ -91,12 +92,12 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 					'mq_name'    => 'min-width'
 				),
 				array(
-					'size_value' => 'calc(100vm - 30px)'
+					'size_value' => 'calc(100vw - 30px)'
 				),
 			)
 		);
 
-		$expected = '(min-width: 60em) 10em, (min-width: 30em) 20em, calc(100vm - 30px)';
+		$expected = '(min-width: 60em) 10em, (min-width: 30em) 20em, calc(100vw - 30px)';
 		$sizes = tevkori_get_sizes( $id, 'medium', $args );
 
 		$this->assertSame( $expected, $sizes );
@@ -105,8 +106,9 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 	/**
 	 * @expectedDeprecated tevkori_get_sizes
 	 * @expectedException PHPUnit_Framework_Error_Notice
+	 * @group 226
 	 */
-	function test_filter_tevkori_get_sizes_string() {
+	function test_filter_tevkori_get_sizes() {
 		// Add our test filter.
 		add_filter( 'tevkori_image_sizes_args', array( $this, '_test_tevkori_image_sizes_args' ) );
 
@@ -115,7 +117,24 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 		$sizes = tevkori_get_sizes($id, 'medium');
 
 		// Evaluate that the sizes returned is what we expected.
-		$this->assertSame( $sizes, '100vm' );
+		$this->assertSame( $sizes, '100vw' );
+
+		remove_filter( 'tevkori_image_sizes_args', array( $this, '_test_tevkori_image_sizes_args' ) );
+	}
+
+	/**
+	 * @group 226
+	 */
+	function test_filter_shim_calculate_image_sizes() {
+		// Add our test filter.
+		add_filter( 'tevkori_image_sizes_args', array( $this, '_test_tevkori_image_sizes_args' ) );
+
+		// A size array is the min required data for `wp_calculate_image_sizes()`.
+		$size = array( 300, 150 );
+		$sizes = wp_calculate_image_sizes( $size, null, null );
+
+		// Evaluate that the sizes returned is what we expected.
+		$this->assertSame( $sizes, '100vw' );
 
 		remove_filter( 'tevkori_image_sizes_args', array( $this, '_test_tevkori_image_sizes_args' ) );
 	}
@@ -124,7 +143,7 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 	 * A simple test filter for tevkori_get_sizes().
 	 */
 	function _test_tevkori_image_sizes_args( $args ) {
-		$args['sizes'] = "100vm";
+		$args['sizes'] = "100vw";
 		return $args;
 	}
 

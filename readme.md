@@ -25,7 +25,8 @@ This plugin includes several functions that can be used by theme and plugin deve
 
 Advanced image compression is an experimental image editor that makes use of ImageMagick's compression setting to deliver deliver higher quality images at a smaller file sizes. As such, **ImageMagick is required for this feature to work**. To learn more about the actual compression settings being used, read Dave Newton's [excellent writeup at Smashing Magazine](http://www.smashingmagazine.com/2015/06/efficient-image-resizing-with-imagemagick/).
 
-To enable, place the following code in your `functions.php` file -
+To enable, place the following code in your `functions.php` file
+
 ```
 function custom_theme_setup() {
 	add_theme_support( 'advanced-image-compression' );
@@ -38,14 +39,13 @@ add_action( 'after_setup_theme', 'custom_theme_setup' );
 
 
 ---
-### Function Reference
+### Function/Hook Reference
 
 #### wp_get_attachment_image_sizes( $size, $image_meta = null, $attachment_id = 0, $image_src = null )
 
 Create 'sizes' attribute value for an image.
 
 **Return:** (string|bool) A valid source size value for use in a 'sizes' attribute or false.
-
 
 ##### Parameters
 
@@ -97,6 +97,24 @@ Image size. Accepts any valid image size, or an array of width and height values
 ```
 <img src="myimg.png" srcset="<?php echo esc_attr( wp_get_attachment_image_srcset( 11, 'medium' ) ); ?>" sizes="{{custom sizes attribute}}" >
 ```
+
+---
+
+#### apply_filters( 'max_srcset_image_width', 1600, $size_array );
+
+Filter the maximum image width to be included in a 'srcset' attribute.
+
+##### Parameters
+
+**$max_width** (int)
+The maximum image width to be included in the 'srcset'. Default '1600'.
+
+**$size_array** (array)
+Array of width and height values in pixels (in that order).
+
+##### Used by
+
+wp_get_attachment_image_srcset()
 
 ---
 

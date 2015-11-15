@@ -1,5 +1,25 @@
 <?php
 /**
+ * Mark a filter hook as deprecated and inform when it has been used.
+ *
+ * @since 3.1.0
+ * @access private
+ *
+ * @param string $filter      The filter hook that was used.
+ * @param string $version     The version that deprecated the filter hook.
+ * @param string $replacement Optional. The filter hook that should have been used. Default null.
+ */
+function _tevkori_deprecated_filter( $filter, $version, $replacement = null ) {
+	if ( WP_DEBUG ) {
+		if ( ! is_null( $replacement ) ) {
+			trigger_error( sprintf( 'Filter hook %1$s is <strong>deprecated</strong> since version %2$s! Use %3$s instead.', $filter, $version, $replacement ) );
+		} else {
+			trigger_error( sprintf( 'Filter hook %1$s is <strong>deprecated</strong> since version %2$s with no alternative available.', $filter, $version ) );
+		}
+	}
+}
+
+/**
  * Returns an array of image sources for a 'srcset' attribute.
  *
  * @since 2.1.0
@@ -43,6 +63,7 @@ function tevkori_get_srcset_array( $id, $size = 'medium' ) {
 	 * @param array|string $size  Image size. Image size or an array of width and height
 	 *                            values in pixels (in that order).
 	 */
+	_tevkori_deprecated_filter( 'tevkori_srcset_array', '3.0.0', 'wp_calculate_image_srcset' );
 	return apply_filters( 'tevkori_srcset_array', $arr, $id, $size );
 }
 
@@ -164,6 +185,7 @@ function tevkori_get_sizes( $id, $size = 'medium', $args = null ) {
 		* @param array|string $size Image size. Image size or an array of width and height
 		*                           values in pixels (in that order).
 		*/
+		_tevkori_deprecated_filter( 'tevkori_image_sizes_args', '3.0.0', 'wp_calculate_image_sizes' );
 		$args = apply_filters( 'tevkori_image_sizes_args', $args, $id, $size );
 
 		// If sizes is passed as a string, just use the string.
@@ -300,6 +322,7 @@ function wp_get_attachment_image_sizes_filter_shim( $sizes, $size, $image_src, $
 		 * @param int          $attachment_id Image attachment ID of the original image.
 		 * @param string       $image_src     Optional. The URL to the image file.
 		 */
+		_tevkori_deprecated_filter( 'wp_get_attachment_image_sizes', '3.1.0', 'wp_calculate_image_sizes' );
 		return apply_filters( 'wp_get_attachment_image_sizes', $sizes, $size, $image_meta, $attachment_id, $image_src );
 	} else {
 		return $sizes;

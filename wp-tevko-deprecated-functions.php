@@ -4,7 +4,7 @@
  *
  * @since 2.1.0
  * @deprecated 3.0.0 Use 'wp_get_attachment_image_srcset()'
- * @see 'wp_get_attachment_image_sizes()'
+ * @see 'wp_get_attachment_image_srcset()'
  * @see 'wp_calculate_image_srcset()'
  *
  * @param int          $id   Image attachment ID.
@@ -51,7 +51,7 @@ function tevkori_get_srcset_array( $id, $size = 'medium' ) {
  *
  * @since 2.3.0
  * @deprecated 3.0.0 Use 'wp_get_attachment_image_srcset()'
- * @see 'wp_get_attachment_image_sizes()'
+ * @see 'wp_get_attachment_image_srcset()'
  * @see 'wp_calculate_image_srcset()'
  *
  * @param int          $id   Image attachment ID.
@@ -76,7 +76,7 @@ function tevkori_get_srcset( $id, $size = 'medium' ) {
  *
  * @since 2.1.0
  * @deprecated 3.0.0 Use 'wp_get_attachment_image_srcset()'
- * @see 'wp_get_attachment_image_sizes()'
+ * @see 'wp_get_attachment_image_srcset()'
  * @see 'wp_calculate_image_srcset()'
  *
  * @param int          $id   Image attachment ID.
@@ -104,6 +104,7 @@ function tevkori_get_srcset_string( $id, $size = 'medium' ) {
  * @since 2.2.0
  * @deprecated 3.0.0 Use 'wp_get_attachment_image_sizes()'
  * @see 'wp_get_attachment_image_sizes()'
+ * @see 'wp_calculate_image_sizes()'
  *
  * @param int          $id   Image attachment ID.
  * @param array|string $size Image size. Accepts any valid image size, or an array of width and height
@@ -155,8 +156,8 @@ function tevkori_get_sizes( $id, $size = 'medium', $args = null ) {
 		* Filter arguments used to create the 'sizes' attribute value.
 		*
 		* @since 2.4.0
-		* @deprecated 3.0.0 Use 'wp_get_attachment_image_sizes'
-		* @see 'wp_get_attachment_image_sizes'
+		* @deprecated 3.0.0 Use 'wp_calculate_image_sizes'
+		* @see 'wp_calculate_image_sizes'
 		*
 		* @param array        $args An array of arguments used to create a 'sizes' attribute.
 		* @param int          $id   Post ID of the original image.
@@ -217,6 +218,7 @@ function tevkori_get_sizes( $id, $size = 'medium', $args = null ) {
  * @since 2.2.0
  * @deprecated 3.0.0 Use 'wp_get_attachment_image_sizes()'
  * @see 'wp_get_attachment_image_sizes()'
+ * @see 'wp_calculate_image_sizes()'
  *
  * @param int          $id   Image attachment ID.
  * @param array|string $size Image size. Accepts any valid image size, or an array of width and height

@@ -330,7 +330,7 @@ add_filter( 'wp_calculate_image_sizes', '_tevkori_image_sizes_args_shim', 1, 5 )
 function tevkori_get_sizes_string( $id, $size = 'medium', $args = null ) {
 	_deprecated_function( __FUNCTION__, '3.0.0', 'wp_get_attachment_image_sizes()' );
 
-	if ( $args || has_filter( 'tevkori_image_sizes_args' ) ) {
+	if ( $args ) {
 		$sizes = tevkori_get_sizes( $id, $size, $args );
 	} else {
 		$sizes = wp_get_attachment_image_sizes( $id, $size );

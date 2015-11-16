@@ -63,7 +63,9 @@ function tevkori_get_srcset_array( $id, $size = 'medium' ) {
 	 * @param array|string $size  Image size. Image size or an array of width and height
 	 *                            values in pixels (in that order).
 	 */
-	_tevkori_deprecated_filter( 'tevkori_srcset_array', '3.0.0', 'wp_calculate_image_srcset' );
+	if ( has_filter( 'tevkori_srcset_array' ) ) {
+		_tevkori_deprecated_filter( 'tevkori_srcset_array', '3.0.0', 'wp_calculate_image_srcset' );
+	}
 	return apply_filters( 'tevkori_srcset_array', $arr, $id, $size );
 }
 
@@ -269,6 +271,9 @@ function _tevkori_image_sizes_args_shim( $sizes, $size, $image_src, $image_meta,
 	* @param array|string $size Image size. Image size or an array of width and height
 	*                           values in pixels (in that order).
 	*/
+	if ( has_filter( 'tevkori_image_sizes_args' ) ) {
+		_tevkori_deprecated_filter( 'tevkori_image_sizes_args', '3.0.0', 'wp_calculate_image_sizes' );
+	}
 	$args = apply_filters( 'tevkori_image_sizes_args', $args, $id, $size );
 
 	// If sizes is passed as a string, just use the string.

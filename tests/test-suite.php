@@ -72,7 +72,6 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 
 	/**
 	 * @expectedDeprecated tevkori_get_sizes
-	 * @expectedException PHPUnit_Framework_Error_Notice
 	 * @group 226
 	 */
 	function test_tevkori_get_sizes_with_args() {
@@ -123,6 +122,7 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 	}
 
 	/**
+	 * @expectedException PHPUnit_Framework_Error_Notice
 	 * @group 226
 	 */
 	function test_filter_shim_calculate_image_sizes() {
@@ -199,7 +199,6 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 
 	/**
 	 * @expectedDeprecated tevkori_get_srcset_array
-	 * @expectedException PHPUnit_Framework_Error_Notice
 	 */
 	function test_tevkori_get_srcset_array() {
 		// make an image
@@ -224,7 +223,6 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 
 	/**
 	 * @expectedDeprecated tevkori_get_srcset_array
-	 * @expectedException PHPUnit_Framework_Error_Notice
 	 */
 	function test_tevkori_get_srcset_array_random_size_name() {
 		// Make an image.
@@ -249,7 +247,6 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 
 	/**
 	 * @expectedDeprecated tevkori_get_srcset_array
-	 * @expectedException PHPUnit_Framework_Error_Notice
 	 */
 	function test_tevkori_get_srcset_array_no_date_upoads() {
 		// Save the current setting for uploads folders.
@@ -300,7 +297,6 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 	 * Test for filtering out leftover sizes after an image is edited.
 	 * @group 155
 	 * @expectedDeprecated tevkori_get_srcset_array
-	 * @expectedException PHPUnit_Framework_Error_Notice
 	 */
 	function test_tevkori_get_srcset_array_with_edits() {
 		// Make an image.

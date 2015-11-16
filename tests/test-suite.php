@@ -16,8 +16,8 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 	}
 
 	public static function create_upload_object( $filename, $parent = 0 ) {
-		$contents = file_get_contents($filename);
-		$upload = wp_upload_bits(basename($filename), null, $contents);
+		$contents = file_get_contents( $filename );
+		$upload = wp_upload_bits(basename( $filename ), null, $contents );
 		$type = '';
 
 		if ( ! empty($upload['type'] ) ) {
@@ -157,7 +157,7 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 
 		// Set up our test.
 		$id = self::$large_id;
-		$srcset = tevkori_get_srcset_array($id, 'medium');
+		$srcset = tevkori_get_srcset_array( $id, 'medium' );
 
 		// Evaluate that the sizes returned is what we expected.
 		foreach( $srcset as $width => $source ) {
@@ -307,7 +307,7 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 		$meta = wp_get_attachment_metadata( $id );
 
 		// Mimick hash generation method used in wp_save_image().
-		$hash = 'e' . time() . rand(100, 999);
+		$hash = 'e' . time() . rand( 100, 999 );
 
 		// Replace file paths for full and medium sizes with hashed versions.
 		$filename_base = basename( $meta['file'], '.png' );
@@ -362,7 +362,7 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 	 * Helper funtion to filter image_downsize and return zero values for width and height.
 	 */
 	public function _filter_image_downsize( $out, $id, $size ) {
-		$img_url = wp_get_attachment_url($id);
+		$img_url = wp_get_attachment_url( $id );
 		return array( $img_url, 0, 0 );
 	}
 
@@ -555,7 +555,7 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 		$large_src = 'http://example.org/wp-content/uploads/' . $image_meta['sizes']['large']['file'];
 
 		// Test with soft resized size array.
-		$size_array = array(900, 450);
+		$size_array = array( 900, 450 );
 
 		// Full size GIFs should not return a srcset.
 		$this->assertFalse( wp_calculate_image_srcset( $full_src, $size_array, $image_meta ) );

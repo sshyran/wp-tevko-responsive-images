@@ -287,8 +287,6 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 		 * In our tests, thumbnails would only return a single srcset candidate,
 		 * in which case we don't bother returning a srcset array.
 		 */
-		$srcset = tevkori_get_srcset( $id, 'thumbnail' );
-
 		$this->assertTrue( 1 === count( tevkori_get_srcset_array( $id, 'thumbnail' ) ) );
 		$this->assertFalse( tevkori_get_srcset( $id, 'thumbnail' ) );
 	}
@@ -374,7 +372,6 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 	function test_tevkori_get_srcset_string() {
 		// Make an image.
 		$id = self::$large_id;
-		$srcset = tevkori_get_srcset_string( $id, 'full-size' );
 
 		$srcset = tevkori_get_srcset_string( $id, 'full' );
 		$image = wp_get_attachment_metadata( $id );

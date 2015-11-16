@@ -360,9 +360,20 @@ We use a hook because if you attempt to dequeue a script before it's enqueued, w
 
 ## Version
 
-3.0.0
+3.1.0
 
 ## Changelog
+
+**3.1.0**
+
+- Adds special handling of GIFs in srcset attributes to preserve animation (issue #223).
+- Makes internal srcset/sizes functions more consistent (issue #224).
+- Fixes a bug where functions hooked into `tevkori_image_sizes_args` were not firing (issue #226).
+- Fixes a bug where custom sizes attributes added via the post editor were being overwritten (issue #227).
+- Deprecates hook `wp_get_attachment_image_sizes` (issue #228).
+- Fixes a bug where `the_post_thumbnail()` would fail to add srcset/sizes attributes (issue #232).
+- Several improvements to internal inline documentation.
+- Major improvements to function/hook documentation in readme.md after 3.0.0 changes.
 
 **3.0.0**
 

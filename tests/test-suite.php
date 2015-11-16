@@ -47,104 +47,40 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 	/* OUR TESTS */
 
 	/**
-	 * @expectedDeprecated tevkori_get_sizes
+	 * @expectedDeprecated tevkori_get_srcset_array
 	 */
-	function test_tevkori_get_sizes() {
-		// Make an image.
+	function test_tevkori_get_srcset_array() {
+		// make an image
 		$id = self::$large_id;
+		$srcset = tevkori_get_srcset_array( $id, 'medium' );
 
-		global $content_width;
+		$year_month = date('Y/m');
+		$image = wp_get_attachment_metadata( $id );
 
-		// Test sizes against the default WP sizes.
-		$intermediates = array( 'thumbnail', 'medium', 'large' );
-
-		foreach( $intermediates as $int ) {
-			$width = get_option( $int . '_size_w' );
-
-			$width = ( $width <= $content_width ) ? $width : $content_width;
-
-			$expected = '(max-width: ' . $width . 'px) 100vw, ' . $width . 'px';
-			$sizes = tevkori_get_sizes( $id, $int );
-
-			$this->assertSame( $expected, $sizes );
+		foreach( $image['sizes'] as $name => $size ) {
+			// Whitelist the sizes that should be included so we pick up 'medium_large' in 4.4.
+			if ( in_array( $name, array( 'medium', 'medium_large', 'large' ) ) ) {
+				$expected[$size['width']] = 'http://example.org/wp-content/uploads/' . $year_month = date('Y/m') . '/' . $size['file'] . ' ' . $size['width'] . 'w';
+			}
 		}
+
+		// Add the full size width at the end.
+		$expected[$image['width']] = 'http://example.org/wp-content/uploads/' . $image['file'] . ' ' . $image['width'] .'w';
+
+		$this->assertSame( $expected, $srcset );
 	}
 
 	/**
-	 * @expectedDeprecated tevkori_get_sizes
-	 * @group 226
+	 * A test filter for tevkori_get_srcset_array() that removes any sources
+	 * that are larger than 500px wide.
 	 */
-	function test_tevkori_get_sizes_with_args() {
-		// Make an image.
-		$id = self::$large_id;
-
-		$args = array(
-			'sizes' => array(
-				array(
-					'size_value' => '10em',
-					'mq_value'   => '60em',
-					'mq_name'    => 'min-width'
-				),
-				array(
-					'size_value' => '20em',
-					'mq_value'   => '30em',
-					'mq_name'    => 'min-width'
-				),
-				array(
-					'size_value' => 'calc(100vw - 30px)'
-				),
-			)
-		);
-
-		$expected = '(min-width: 60em) 10em, (min-width: 30em) 20em, calc(100vw - 30px)';
-		$sizes = tevkori_get_sizes( $id, 'medium', $args );
-
-		$this->assertSame( $expected, $sizes );
-	}
-
-	/**
-	 * @expectedDeprecated tevkori_get_sizes
-	 * @expectedException PHPUnit_Framework_Error_Notice
-	 * @group 226
-	 */
-	function test_filter_tevkori_get_sizes() {
-		// Add our test filter.
-		add_filter( 'tevkori_image_sizes_args', array( $this, '_test_tevkori_image_sizes_args' ) );
-
-		// Set up our test.
-		$id = self::$large_id;
-		$sizes = tevkori_get_sizes($id, 'medium');
-
-		// Evaluate that the sizes returned is what we expected.
-		$this->assertSame( $sizes, '100vw' );
-
-		remove_filter( 'tevkori_image_sizes_args', array( $this, '_test_tevkori_image_sizes_args' ) );
-	}
-
-	/**
-	 * @expectedException PHPUnit_Framework_Error_Notice
-	 * @group 226
-	 */
-	function test_filter_shim_calculate_image_sizes() {
-		// Add our test filter.
-		add_filter( 'tevkori_image_sizes_args', array( $this, '_test_tevkori_image_sizes_args' ) );
-
-		// A size array is the min required data for `wp_calculate_image_sizes()`.
-		$size = array( 300, 150 );
-		$sizes = wp_calculate_image_sizes( $size, null, null );
-
-		// Evaluate that the sizes returned is what we expected.
-		$this->assertSame( $sizes, '100vw' );
-
-		remove_filter( 'tevkori_image_sizes_args', array( $this, '_test_tevkori_image_sizes_args' ) );
-	}
-
-	/**
-	 * A simple test filter for tevkori_get_sizes().
-	 */
-	function _test_tevkori_image_sizes_args( $args ) {
-		$args['sizes'] = "100vw";
-		return $args;
+	function _test_tevkori_srcset_array( $array ) {
+		foreach ( $array as $size => $file ) {
+			if ( $size > 500 ) {
+				unset( $array[ $size ] );
+			}
+		}
+		return $array;
 	}
 
 	/**
@@ -169,56 +105,15 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 	}
 
 	/**
-	 * A test filter for tevkori_get_srcset_array() that removes any sources
-	 * that are larger than 500px wide.
-	 */
-	function _test_tevkori_srcset_array( $array ) {
-		foreach ( $array as $size => $file ) {
-			if ( $size > 500 ) {
-				unset( $array[ $size ] );
-			}
-		}
-		return $array;
-	}
-
-	/**
-	 * @expectedDeprecated tevkori_get_sizes
-	 * @expectedDeprecated tevkori_get_sizes_string
-	 */
-	function test_tevkori_get_sizes_string() {
-		// Make an image.
-		$id = self::$large_id;
-
-		$sizes = tevkori_get_sizes( $id, 'medium' );
-		$sizes_string = tevkori_get_sizes_string( $id, 'medium' );
-
-		$expected = 'sizes="' . $sizes . '"';
-
-		$this->assertSame( $expected, $sizes_string );
-	}
-
-	/**
 	 * @expectedDeprecated tevkori_get_srcset_array
 	 */
-	function test_tevkori_get_srcset_array() {
-		// make an image
+	function test_tevkori_get_srcset_array_false() {
+		// Make an image.
 		$id = self::$large_id;
-		$srcset = tevkori_get_srcset_array( $id, 'medium' );
+		$srcset = tevkori_get_srcset_array( 99999, 'foo' );
 
-		$year_month = date('Y/m');
-		$image = wp_get_attachment_metadata( $id );
-
-		foreach( $image['sizes'] as $name => $size ) {
-			// Whitelist the sizes that should be included so we pick up 'medium_large' in 4.4.
-			if ( in_array( $name, array( 'medium', 'medium_large', 'large' ) ) ) {
-				$expected[$size['width']] = 'http://example.org/wp-content/uploads/' . $year_month = date('Y/m') . '/' . $size['file'] . ' ' . $size['width'] . 'w';
-			}
-		}
-
-		// Add the full size width at the end.
-		$expected[$image['width']] = 'http://example.org/wp-content/uploads/' . $image['file'] . ' ' . $image['width'] .'w';
-
-		$this->assertSame( $expected, $srcset );
+		// For canola.jpg we should return.
+		$this->assertFalse( $srcset );
 	}
 
 	/**
@@ -330,15 +225,11 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 	}
 
 	/**
-	 * @expectedDeprecated tevkori_get_srcset_array
+	 * Helper funtion to filter image_downsize and return zero values for width and height.
 	 */
-	function test_tevkori_get_srcset_array_false() {
-		// Make an image.
-		$id = self::$large_id;
-		$srcset = tevkori_get_srcset_array( 99999, 'foo' );
-
-		// For canola.jpg we should return.
-		$this->assertFalse( $srcset );
+	public function _filter_image_downsize( $out, $id, $size ) {
+		$img_url = wp_get_attachment_url( $id );
+		return array( $img_url, 0, 0 );
 	}
 
 	/**
@@ -356,14 +247,6 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 		$this->assertFalse( $srcset );
 		// Remove filter.
 		remove_filter( 'image_downsize', array( $this, '_filter_image_downsize' ) );
-	}
-
-	/**
-	 * Helper funtion to filter image_downsize and return zero values for width and height.
-	 */
-	public function _filter_image_downsize( $out, $id, $size ) {
-		$img_url = wp_get_attachment_url( $id );
-		return array( $img_url, 0, 0 );
 	}
 
 	/**
@@ -394,57 +277,120 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 	}
 
 	/**
-	 * @group 159
+	 * @expectedDeprecated tevkori_get_sizes
 	 */
-	function test_tevkori_filter_attachment_image_attributes() {
+	function test_tevkori_get_sizes() {
 		// Make an image.
 		$id = self::$large_id;
 
-		// Get attachment post data.
-		$attachment = get_post( $id );
-		$image = wp_get_attachment_image_src( $id, 'medium' );
-		list( $src, $width, $height ) = $image;
+		global $content_width;
 
-		// Create dummy attributes array.
-		$attr = array(
-			'src'    => $src,
-			'width'  => $width,
-			'height' => $height,
-		);
+		// Test sizes against the default WP sizes.
+		$intermediates = array( 'thumbnail', 'medium', 'large' );
 
-		// Apply filter.
-		$resp_attr = tevkori_filter_attachment_image_attributes( $attr, $attachment, 'medium' );
+		foreach( $intermediates as $int ) {
+			$width = get_option( $int . '_size_w' );
 
-		// Test output.
-		$this->assertTrue( isset( $resp_attr['srcset'] ) );
-		$this->assertTrue( isset( $resp_attr['sizes'] ) );
+			$width = ( $width <= $content_width ) ? $width : $content_width;
+
+			$expected = '(max-width: ' . $width . 'px) 100vw, ' . $width . 'px';
+			$sizes = tevkori_get_sizes( $id, $int );
+
+			$this->assertSame( $expected, $sizes );
+		}
 	}
 
 	/**
-	 * @group 159
+	 * @expectedDeprecated tevkori_get_sizes
+	 * @group 226
 	 */
-	function test_tevkori_filter_attachment_image_attributes_thumbnails() {
+	function test_tevkori_get_sizes_with_args() {
 		// Make an image.
 		$id = self::$large_id;
 
-		// Get attachment post data.
-		$attachment = get_post( $id );
-		$image = wp_get_attachment_image_src( $id, 'thumbnail' );
-		list( $src, $width, $height ) = $image;
-
-		// Create dummy attributes array.
-		$attr = array(
-			'src'    => $src,
-			'width'  => $width,
-			'height' => $height,
+		$args = array(
+			'sizes' => array(
+				array(
+					'size_value' => '10em',
+					'mq_value'   => '60em',
+					'mq_name'    => 'min-width'
+				),
+				array(
+					'size_value' => '20em',
+					'mq_value'   => '30em',
+					'mq_name'    => 'min-width'
+				),
+				array(
+					'size_value' => 'calc(100vw - 30px)'
+				),
+			)
 		);
 
-		// Apply filter.
-		$resp_attr = tevkori_filter_attachment_image_attributes( $attr, $attachment, 'thumbnail' );
+		$expected = '(min-width: 60em) 10em, (min-width: 30em) 20em, calc(100vw - 30px)';
+		$sizes = tevkori_get_sizes( $id, 'medium', $args );
 
-		// Test output.
-		$this->assertFalse( isset( $resp_attr['srcset'] ) );
-		$this->assertFalse( isset( $resp_attr['sizes'] ) );
+		$this->assertSame( $expected, $sizes );
+	}
+
+	/**
+	 * A simple test filter for tevkori_get_sizes().
+	 */
+	function _test_tevkori_image_sizes_args( $args ) {
+		$args['sizes'] = "100vw";
+		return $args;
+	}
+
+	/**
+	 * @expectedDeprecated tevkori_get_sizes
+	 * @expectedException PHPUnit_Framework_Error_Notice
+	 * @group 226
+	 */
+	function test_filter_tevkori_get_sizes() {
+		// Add our test filter.
+		add_filter( 'tevkori_image_sizes_args', array( $this, '_test_tevkori_image_sizes_args' ) );
+
+		// Set up our test.
+		$id = self::$large_id;
+		$sizes = tevkori_get_sizes($id, 'medium');
+
+		// Evaluate that the sizes returned is what we expected.
+		$this->assertSame( $sizes, '100vw' );
+
+		remove_filter( 'tevkori_image_sizes_args', array( $this, '_test_tevkori_image_sizes_args' ) );
+	}
+
+	/**
+	 * @expectedException PHPUnit_Framework_Error_Notice
+	 * @group 226
+	 */
+	function test_filter_shim_calculate_image_sizes() {
+		// Add our test filter.
+		add_filter( 'tevkori_image_sizes_args', array( $this, '_test_tevkori_image_sizes_args' ) );
+
+		// A size array is the min required data for `wp_calculate_image_sizes()`.
+		$size = array( 300, 150 );
+		$sizes = wp_calculate_image_sizes( $size, null, null );
+
+		// Evaluate that the sizes returned is what we expected.
+		$this->assertSame( $sizes, '100vw' );
+
+		remove_filter( 'tevkori_image_sizes_args', array( $this, '_test_tevkori_image_sizes_args' ) );
+	}
+
+	/**
+	 * @expectedDeprecated tevkori_get_sizes
+	 * @expectedDeprecated tevkori_get_sizes_string
+	 */
+	function test_tevkori_get_sizes_string() {
+		// Make an image.
+		$id = self::$large_id;
+
+		$sizes = tevkori_get_sizes( $id, 'medium' );
+		$sizes_string = tevkori_get_sizes_string( $id, 'medium' );
+
+		$expected = 'sizes="' . $sizes . '"';
+
+		$this->assertSame( $expected, $sizes_string );
 	}
 
 	/**
@@ -521,6 +467,60 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 
 		// The content filter should return the image unchanged.
 		$this->assertSame( $image_html, tevkori_filter_content_images( $image_html ) );
+	}
+
+	/**
+	 * @group 159
+	 */
+	function test_tevkori_filter_attachment_image_attributes() {
+		// Make an image.
+		$id = self::$large_id;
+
+		// Get attachment post data.
+		$attachment = get_post( $id );
+		$image = wp_get_attachment_image_src( $id, 'medium' );
+		list( $src, $width, $height ) = $image;
+
+		// Create dummy attributes array.
+		$attr = array(
+			'src'    => $src,
+			'width'  => $width,
+			'height' => $height,
+		);
+
+		// Apply filter.
+		$resp_attr = tevkori_filter_attachment_image_attributes( $attr, $attachment, 'medium' );
+
+		// Test output.
+		$this->assertTrue( isset( $resp_attr['srcset'] ) );
+		$this->assertTrue( isset( $resp_attr['sizes'] ) );
+	}
+
+	/**
+	 * @group 159
+	 */
+	function test_tevkori_filter_attachment_image_attributes_thumbnails() {
+		// Make an image.
+		$id = self::$large_id;
+
+		// Get attachment post data.
+		$attachment = get_post( $id );
+		$image = wp_get_attachment_image_src( $id, 'thumbnail' );
+		list( $src, $width, $height ) = $image;
+
+		// Create dummy attributes array.
+		$attr = array(
+			'src'    => $src,
+			'width'  => $width,
+			'height' => $height,
+		);
+
+		// Apply filter.
+		$resp_attr = tevkori_filter_attachment_image_attributes( $attr, $attachment, 'thumbnail' );
+
+		// Test output.
+		$this->assertFalse( isset( $resp_attr['srcset'] ) );
+		$this->assertFalse( isset( $resp_attr['sizes'] ) );
 	}
 
 	function test_wp_calculate_image_srcset_animated_gifs() {

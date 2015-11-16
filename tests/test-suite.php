@@ -157,10 +157,10 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 
 		// Set up our test.
 		$id = self::$large_id;
-		$sizes = tevkori_get_srcset_array($id, 'medium');
+		$srcset = tevkori_get_srcset_array($id, 'medium');
 
 		// Evaluate that the sizes returned is what we expected.
-		foreach( $sizes as $width => $source ) {
+		foreach( $srcset as $width => $source ) {
 			$this->assertTrue( $width <= 500 );
 		}
 
@@ -203,7 +203,7 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 	function test_tevkori_get_srcset_array() {
 		// make an image
 		$id = self::$large_id;
-		$sizes = tevkori_get_srcset_array( $id, 'medium' );
+		$srcset = tevkori_get_srcset_array( $id, 'medium' );
 
 		$year_month = date('Y/m');
 		$image = wp_get_attachment_metadata( $id );
@@ -218,7 +218,7 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 		// Add the full size width at the end.
 		$expected[$image['width']] = 'http://example.org/wp-content/uploads/' . $image['file'] . ' ' . $image['width'] .'w';
 
-		$this->assertSame( $expected, $sizes );
+		$this->assertSame( $expected, $srcset );
 	}
 
 	/**
@@ -227,7 +227,7 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 	function test_tevkori_get_srcset_array_random_size_name() {
 		// Make an image.
 		$id = self::$large_id;
-		$sizes = tevkori_get_srcset_array( $id, 'foo' );
+		$srcset = tevkori_get_srcset_array( $id, 'foo' );
 
 		$year_month = date('Y/m');
 		$image = wp_get_attachment_metadata( $id );
@@ -242,7 +242,7 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 		// Add the full size width at the end.
 		$expected[$image['width']] = 'http://example.org/wp-content/uploads/' . $image['file'] . ' ' . $image['width'] .'w';
 
-		$this->assertSame( $expected, $sizes );
+		$this->assertSame( $expected, $srcset );
 	}
 
 	/**
@@ -257,7 +257,7 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 
 		// Make an image.
 		$id = self::create_upload_object( self::$test_file_name );
-		$sizes = tevkori_get_srcset_array( $id, 'medium' );
+		$srcset = tevkori_get_srcset_array( $id, 'medium' );
 		$image = wp_get_attachment_metadata( $id );
 
 		foreach( $image['sizes'] as $name => $size ) {
@@ -270,7 +270,7 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 		// Add the full size width at the end.
 		$expected[$image['width']] = 'http://example.org/wp-content/uploads/' . $image['file'] . ' ' . $image['width'] .'w';
 
-		$this->assertSame( $expected, $sizes );
+		$this->assertSame( $expected, $srcset );
 
 		// Leave the uploads option the way you found it.
 		update_option( 'uploads_use_yearmonth_folders', $uploads_use_yearmonth_folders );
@@ -287,7 +287,7 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 		 * In our tests, thumbnails would only return a single srcset candidate,
 		 * in which case we don't bother returning a srcset array.
 		 */
-		$sizes = tevkori_get_srcset( $id, 'thumbnail' );
+		$srcset = tevkori_get_srcset( $id, 'thumbnail' );
 
 		$this->assertTrue( 1 === count( tevkori_get_srcset_array( $id, 'thumbnail' ) ) );
 		$this->assertFalse( tevkori_get_srcset( $id, 'thumbnail' ) );
@@ -323,11 +323,11 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 		$img_url = wp_get_attachment_url( $id );
 
 		// Calculate a srcset array.
-		$sizes = tevkori_get_srcset_array( $id, 'medium' );
+		$srcset = tevkori_get_srcset_array( $id, 'medium' );
 
 		// Test to confirm all sources in the array include the same edit hash.
-		foreach ( $sizes as $size ) {
-			$this->assertTrue( false !== strpos( $size, $hash ) );
+		foreach ( $srcset as $source ) {
+			$this->assertTrue( false !== strpos( $source, $hash ) );
 		}
 	}
 
@@ -337,10 +337,10 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 	function test_tevkori_get_srcset_array_false() {
 		// Make an image.
 		$id = self::$large_id;
-		$sizes = tevkori_get_srcset_array( 99999, 'foo' );
+		$srcset = tevkori_get_srcset_array( 99999, 'foo' );
 
 		// For canola.jpg we should return.
-		$this->assertFalse( $sizes );
+		$this->assertFalse( $srcset );
 	}
 
 	/**
@@ -374,26 +374,26 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 	function test_tevkori_get_srcset_string() {
 		// Make an image.
 		$id = self::$large_id;
-		$sizes = tevkori_get_srcset_string( $id, 'full-size' );
+		$srcset = tevkori_get_srcset_string( $id, 'full-size' );
 
-		$sizes = tevkori_get_srcset_string( $id, 'full' );
+		$srcset = tevkori_get_srcset_string( $id, 'full' );
 		$image = wp_get_attachment_metadata( $id );
 		$year_month = date('Y/m');
 
-		$srcset = '';
+		$expected = '';
 
 		foreach( $image['sizes'] as $name => $size ) {
 			// Whitelist the sizes that should be included so we pick up 'medium_large' in 4.4.
 			if ( in_array( $name, array( 'medium', 'medium_large', 'large' ) ) ) {
-				$srcset .= 'http://example.org/wp-content/uploads/' . $year_month = date('Y/m') . '/' . $size['file'] . ' ' . $size['width'] . 'w, ';
+				$expected .= 'http://example.org/wp-content/uploads/' . $year_month = date('Y/m') . '/' . $size['file'] . ' ' . $size['width'] . 'w, ';
 			}
 		}
 		// Add the full size width at the end.
-		$srcset .= 'http://example.org/wp-content/uploads/' . $image['file'] . ' ' . $image['width'] .'w';
+		$expected .= 'http://example.org/wp-content/uploads/' . $image['file'] . ' ' . $image['width'] .'w';
 
-		$expected = sprintf( 'srcset="%s"', $srcset );
+		$expected = sprintf( 'srcset="%s"', $expected );
 
-		$this->assertSame( $expected, $sizes );
+		$this->assertSame( $expected, $srcset );
 	}
 
 	/**

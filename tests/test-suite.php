@@ -225,7 +225,7 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Helper funtion to filter image_downsize and return zero values for width and height.
+	 * Helper function to filter image_downsize and return zero values for width and height.
 	 */
 	public function _filter_image_downsize( $out, $id, $size ) {
 		$img_url = wp_get_attachment_url( $id );
@@ -301,8 +301,8 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 	}
 
 	/**
-	 * @expectedDeprecated tevkori_get_sizes
 	 * @group 226
+	 * @expectedDeprecated tevkori_get_sizes
 	 */
 	function test_tevkori_get_sizes_with_args() {
 		// Make an image.
@@ -341,9 +341,9 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 	}
 
 	/**
+	 * @group 226
 	 * @expectedDeprecated tevkori_get_sizes
 	 * @expectedException PHPUnit_Framework_Error_Notice
-	 * @group 226
 	 */
 	function test_filter_tevkori_get_sizes() {
 		// Add our test filter.
@@ -360,8 +360,8 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 	}
 
 	/**
-	 * @expectedException PHPUnit_Framework_Error_Notice
 	 * @group 226
+	 * @expectedException PHPUnit_Framework_Error_Notice
 	 */
 	function test_filter_shim_calculate_image_sizes() {
 		// Add our test filter.
@@ -523,6 +523,9 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 		$this->assertFalse( isset( $resp_attr['sizes'] ) );
 	}
 
+	/**
+	 * Test if full size GIFs don't get a srcset.
+	 */
 	function test_wp_calculate_image_srcset_animated_gifs() {
 		// Mock meta for an animated gif.
 		$image_meta = array(

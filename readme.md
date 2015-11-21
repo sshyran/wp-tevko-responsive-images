@@ -9,7 +9,7 @@ This plugin works by including all available image sizes for each image upload. 
 
 ## Contribution Guidelines
 
-Please submit pull requests to our dev branch. If your contribution requires such, please aim to include appropriate tests with your pr as well.
+Please submit pull requests to our dev branch. If your contribution requires such, please aim to include appropriate tests with your PR as well.
 
 ## Documentation
 
@@ -19,7 +19,7 @@ No configuration is needed! Just install the plugin and enjoy automatic responsi
 
 ### For Theme Developers
 
-This plugin includes several functions that can be used by theme and plugin developers in templates.
+This plugin includes several functions that can be used by theme and plugin developers in templates, as well as hooks to filter their output.
 
 ### Advanced Image Compression
 

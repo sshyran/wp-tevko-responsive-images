@@ -153,6 +153,26 @@ Array of width and height values in pixels (in that order).
 
 `wp_calculate_image_srcset()`
 
+##### Usage Example
+
+```
+<?php
+// Increase the limit to 2048px if the image is wider than 800px.
+
+function custom_max_srcset_image_width( $max_width, $size_array ) {
+	$width = $size_array[0];
+
+	if ( $width > 800 ) {
+		$max_width = 2048;
+	}
+
+	return $max_width;
+}
+add_filter( 'max_srcset_image_width', 'custom_max_srcset_image_width', 10, 2 );
+
+?>
+```
+
 ---
 
 #### Hook wp_calculate_image_srcset
@@ -188,6 +208,33 @@ Image attachment ID or 0.
 ##### Used by
 
 `wp_calculate_image_srcset()`
+
+##### Usage Example
+
+```
+<?php
+// Remove sources wider than 800px from the 'srcset' for featured images.
+
+function custom_wp_calculate_image_srcset( $sources, $size_array, $image_src, $image_meta, $attachment_id ) {
+	if ( array_key_exists( 'post-thumbnail', $image_meta['sizes'] ) ) {
+		$post_thumbnail_file = $image_meta['sizes']['post-thumbnail']['file'];
+		$image_src_file = wp_basename( $image_src );
+
+		if ( $image_src_file === $post_thumbnail_file ) {
+			foreach ( $sources as $key => $source ) {
+				if ( $source['value'] > 800 ) {
+					unset( $sources[ $key ] );
+				}
+			}
+		}
+	}
+
+	return $sources;
+}
+add_filter( 'wp_calculate_image_srcset', 'custom_wp_calculate_image_srcset', 10, 5 );
+
+?>
+```
 
 ---
 
@@ -312,6 +359,36 @@ Image attachment ID of the original image or 0.
 ##### Used by
 
 `wp_calculate_image_sizes()`
+
+##### Usage Example
+
+```
+<?php
+// Constrain the width of full size images to the content width.
+
+function custom_wp_calculate_image_sizes( $sizes, $size, $image_src, $image_meta, $attachment_id ) {
+	if ( is_array( $size ) ) {
+		global $content_width;
+		$width = $size[0]
+
+		if ( $width > $content_width ) {
+			$upload_dir = wp_upload_dir();
+			$upload_baseurl = $upload_dir['baseurl'];
+			$fullsize_file = $image_meta['file'];
+			$fullsize_url = trailingslashit( $upload_baseurl ) . $fullsize_file;
+
+			if ( $image_src === $fullsize_url ) {
+				$sizes = '(max-width: ' . $content_width . 'px) 100vw, ' . $content_width . 'px';
+			}
+		}
+	}
+
+	return $sizes;
+}
+add_filter( 'wp_calculate_image_sizes', 'custom_wp_calculate_image_sizes', 10, 5 );
+
+?>
+```
 
 ---
 

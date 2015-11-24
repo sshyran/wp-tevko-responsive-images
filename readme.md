@@ -199,6 +199,9 @@ $width (array) {
 **$size_array** (array)
 Array of width and height values in pixels (in that order).
 
+**$image_src** (string)
+The `src` of the image.
+
 **$image_meta** (array)
 The image meta data as returned by `wp_get_attachment_metadata()`.
 

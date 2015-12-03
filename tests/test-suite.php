@@ -395,62 +395,59 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 
 	/**
 	 * @group 170
-	 * @expectedDeprecated tevkori_get_srcset_string
-	 * @expectedDeprecated tevkori_get_sizes_string
-	 * @expectedDeprecated tevkori_filter_content_images
 	 */
-	function test_tevkori_filter_content_images() {
+	function test_wp_make_content_images_responsive() {
 		// Make an image.
-		$id = self::$large_id;
+		$image_meta = wp_get_attachment_metadata( self::$large_id );
+		$size_array = array( $image_meta['sizes']['medium']['width'], $image_meta['sizes']['medium']['height'] );
 
-		$srcset = tevkori_get_srcset_string( $id, 'medium' );
-		$sizes = tevkori_get_sizes_string( $id, 'medium' );
+		$srcset = wp_get_attachment_image_srcset( self::$large_id, 'medium', $image_meta );
+		$sizes = wp_get_attachment_image_srcset( self::$large_id, 'medium', $image_meta );
 
 		// Function used to build HTML for the editor.
-		$img = get_image_tag( $id, '', '', '', 'medium' );
-		$img_no_size = str_replace( 'size-', '', $img );
-		$img_no_size_id = str_replace( 'wp-image-', 'id-', $img_no_size );
-		$img_with_sizes = str_replace( '<img ', '<img sizes="99vw" ', $img );
+		$img = get_image_tag( self::$large_id, '', '', '', 'medium' );
+		$img_no_size_in_class = str_replace( 'size-', '', $img );
+		$img_no_width_height = str_replace( ' width="' . $size_array[0] . '"', '', $img );
+		$img_no_width_height = str_replace( ' height="' . $size_array[1] . '"', '', $img_no_width_height );
+		$img_no_size_id = str_replace( 'wp-image-', 'id-', $img );
+		$img_with_sizes_attr = str_replace( '<img ', '<img sizes="99vw" ', $img );
+		$img_xhtml = str_replace( ' />', '/>', $img );
+		$img_html5 = str_replace( ' />', '>', $img );
 
-		// Manually add srcset and sizes to the markup from get_image_tag().
-		$respimg = preg_replace('|<img ([^>]+) />|', '<img $1 ' . $srcset . ' ' . $sizes . ' />', $img );
-		$respimg_no_size = preg_replace('|<img ([^>]+) />|', '<img $1 ' . $srcset . ' ' . $sizes . ' />', $img_no_size );
-		$respimg_with_sizes = preg_replace('|<img ([^>]+) />|', '<img $1 ' . $srcset . ' />', $img_with_sizes );
+		// Manually add srcset and sizes to the markup from get_image_tag();
+		$respimg = preg_replace( '|<img ([^>]+) />|', '<img $1 ' . $srcset . ' ' . $sizes . ' />', $img );
+		$respimg_no_size_in_class = preg_replace( '|<img ([^>]+) />|', '<img $1 ' . $srcset . ' ' . $sizes . ' />', $img_no_size_in_class );
+		$respimg_no_width_height = preg_replace( '|<img ([^>]+) />|', '<img $1 ' . $srcset . ' ' . $sizes . ' />', $img_no_width_height );
+		$respimg_with_sizes_attr = preg_replace('|<img ([^>]+) />|', '<img $1 ' . $srcset . ' />', $img_with_sizes_attr );
+		$respimg_xhtml = preg_replace( '|<img ([^>]+)/>|', '<img $1 ' . $srcset . ' ' . $sizes . ' />', $img_xhtml );
+		$respimg_html5 = preg_replace( '|<img ([^>]+)>|', '<img $1 ' . $srcset . ' ' . $sizes . ' />', $img_html5 );
 
-		$content = '<p>Welcome to WordPress!  This post contains important information.  After you read it, you can make it private to hide it from visitors but still have the information handy for future reference.</p>
-			<p>First things first:</p>
-
+		$content = '
+			<p>Image, standard. Should have srcset and sizes.</p>
 			%1$s
 
-			<ul>
-			<li><a href="http://wordpress.org" title="Subscribe to the WordPress mailing list for Release Notifications">Subscribe to the WordPress mailing list for release notifications</a></li>
-			</ul>
-
+			<p>Image, no size class. Should have srcset and sizes.</p>
 			%2$s
 
-			<p>As a subscriber, you will receive an email every time an update is available (and only then).  This will make it easier to keep your site up to date, and secure from evildoers.<br />
-			When a new version is released, <a href="http://wordpress.org" title="If you are already logged in, this will take you directly to the Dashboard">log in to the Dashboard</a> and follow the instructions.<br />
-			Upgrading is a couple of clicks!</p>
-
+			<p>Image, no width and height attributes. Should have srcset and sizes (from matching the file name).</p>
 			%3$s
 
-			<p>Then you can start enjoying the WordPress experience:</p>
-			<ul>
-			<li>Edit your personal information at <a href="http://wordpress.org" title="Edit settings like your password, your display name and your contact information">Users &#8250; Your Profile</a></li>
-			<li>Start publishing at <a href="http://wordpress.org" title="Create a new post">Posts &#8250; Add New</a> and at <a href="http://wordpress.org" title="Create a new page">Pages &#8250; Add New</a></li>
-			<li>Browse and install plugins at <a href="http://wordpress.org" title="Browse and install plugins at the official WordPress repository directly from your Dashboard">Plugins &#8250; Add New</a></li>
-			<li>Browse and install themes at <a href="http://wordpress.org" title="Browse and install themes at the official WordPress repository directly from your Dashboard">Appearance &#8250; Add New Themes</a></li>
-			<li>Modify and prettify your website&#8217;s links at <a href="http://wordpress.org" title="For example, select a link structure like: http://example.com/1999/12/post-name">Settings &#8250; Permalinks</a></li>
-			<li>Import content from another system or WordPress site at <a href="http://wordpress.org" title="WordPress comes with importers for the most common publishing systems">Tools &#8250; Import</a></li>
-			<li>Find answers to your questions at the <a href="http://wordpress.orgs" title="The official WordPress documentation, maintained by the WordPress community">WordPress Codex</a></li>
-			</ul>
+			<p>Image, no attachment ID class. Should NOT have srcset and sizes.</p>
+			%4$s
 
-			%4$s';
+			<p>Image, with sizes attribute. Should NOT have two sizes attributes.</p>
+			%5$s
 
-		$content_unfiltered = sprintf( $content, $img, $img_no_size, $img_no_size_id, $img_with_sizes );
-		$content_filtered = sprintf( $content, $respimg, $respimg_no_size, $img_no_size_id, $respimg_with_sizes );
+			<p>Image, XHTML 1.0 style (no space before the closing slash). Should have srcset and sizes.</p>
+			%6$s
 
-		$this->assertSame( $content_filtered, tevkori_filter_content_images( $content_unfiltered ) );
+			<p>Image, HTML 5.0 style. Should have srcset and sizes.</p>
+			%7$s';
+
+		$content_unfiltered = sprintf( $content, $img, $img_no_size_in_class, $img_no_width_height, $img_no_size_id, $img_with_sizes_attr, $img_xhtml, $img_html5 );
+		$content_filtered = sprintf( $content, $respimg, $respimg_no_size_in_class, $respimg_no_width_height, $img_no_size_id, $respimg_with_sizes_attr, $respimg_xhtml, $respimg_html5 );
+
+		$this->assertSame( $content_filtered, wp_make_content_images_responsive( $content_unfiltered ) );
 	}
 
 	/**

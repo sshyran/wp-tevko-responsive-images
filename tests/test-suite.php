@@ -57,22 +57,33 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 	 * @expectedDeprecated tevkori_get_srcset_array
 	 */
 	function test_tevkori_get_srcset_array() {
+		global $_wp_additional_image_sizes;
+
 		// make an image
 		$id = self::$large_id;
 		$srcset = tevkori_get_srcset_array( $id, 'medium' );
 
 		$year_month = date('Y/m');
-		$image = wp_get_attachment_metadata( $id );
+		$image_meta = wp_get_attachment_metadata( $id );
 
-		foreach( $image['sizes'] as $name => $size ) {
+		$intermediates = array( 'medium', 'medium_large', 'large', 'full' );
+
+		// Add any soft crop intermediate sizes.
+		foreach ( $_wp_additional_image_sizes as $name => $additional_size ) {
+			if ( ! $_wp_additional_image_sizes[$name]['crop'] || 0 === $_wp_additional_image_sizes[$name]['height'] ) {
+				$intermediates[] = $name;
+			}
+		}
+
+		foreach( $image_meta['sizes'] as $name => $size ) {
 			// Whitelist the sizes that should be included so we pick up 'medium_large' in 4.4.
-			if ( in_array( $name, array( 'medium', 'medium_large', 'large' ) ) ) {
+			if ( in_array( $name, $intermediates ) ) {
 				$expected[$size['width']] = 'http://example.org/wp-content/uploads/' . $year_month = date('Y/m') . '/' . $size['file'] . ' ' . $size['width'] . 'w';
 			}
 		}
 
 		// Add the full size width at the end.
-		$expected[$image['width']] = 'http://example.org/wp-content/uploads/' . $image['file'] . ' ' . $image['width'] .'w';
+		$expected[$image_meta['width']] = 'http://example.org/wp-content/uploads/' . $image_meta['file'] . ' ' . $image_meta['width'] .'w';
 
 		$this->assertSame( $expected, $srcset );
 	}
@@ -127,22 +138,33 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 	 * @expectedDeprecated tevkori_get_srcset_array
 	 */
 	function test_tevkori_get_srcset_array_random_size_name() {
-		// Make an image.
+		global $_wp_additional_image_sizes;
+
+		// make an image
 		$id = self::$large_id;
 		$srcset = tevkori_get_srcset_array( $id, 'foo' );
 
 		$year_month = date('Y/m');
-		$image = wp_get_attachment_metadata( $id );
+		$image_meta = wp_get_attachment_metadata( $id );
 
-		foreach( $image['sizes'] as $name => $size ) {
+		$intermediates = array( 'medium', 'medium_large', 'large', 'full' );
+
+		// Add any soft crop intermediate sizes.
+		foreach ( $_wp_additional_image_sizes as $name => $additional_size ) {
+			if ( ! $_wp_additional_image_sizes[$name]['crop'] || 0 === $_wp_additional_image_sizes[$name]['height'] ) {
+				$intermediates[] = $name;
+			}
+		}
+
+		foreach( $image_meta['sizes'] as $name => $size ) {
 			// Whitelist the sizes that should be included so we pick up 'medium_large' in 4.4.
-			if ( in_array( $name, array( 'medium', 'medium_large', 'large' ) ) ) {
+			if ( in_array( $name, $intermediates ) ) {
 				$expected[$size['width']] = 'http://example.org/wp-content/uploads/' . $year_month = date('Y/m') . '/' . $size['file'] . ' ' . $size['width'] . 'w';
 			}
 		}
 
 		// Add the full size width at the end.
-		$expected[$image['width']] = 'http://example.org/wp-content/uploads/' . $image['file'] . ' ' . $image['width'] .'w';
+		$expected[$image_meta['width']] = 'http://example.org/wp-content/uploads/' . $image_meta['file'] . ' ' . $image_meta['width'] .'w';
 
 		$this->assertSame( $expected, $srcset );
 	}
@@ -151,6 +173,7 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 	 * @expectedDeprecated tevkori_get_srcset_array
 	 */
 	function test_tevkori_get_srcset_array_no_date_upoads() {
+		global $_wp_additional_image_sizes;
 		// Save the current setting for uploads folders.
 		$uploads_use_yearmonth_folders = get_option( 'uploads_use_yearmonth_folders' );
 
@@ -160,17 +183,26 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 		// Make an image.
 		$id = self::create_upload_object( self::$test_file_name );
 		$srcset = tevkori_get_srcset_array( $id, 'medium' );
-		$image = wp_get_attachment_metadata( $id );
+		$image_meta = wp_get_attachment_metadata( $id );
 
-		foreach( $image['sizes'] as $name => $size ) {
+		$intermediates = array( 'medium', 'medium_large', 'large', 'full' );
+
+		// Add any soft crop intermediate sizes.
+		foreach ( $_wp_additional_image_sizes as $name => $additional_size ) {
+			if ( ! $_wp_additional_image_sizes[$name]['crop'] || 0 === $_wp_additional_image_sizes[$name]['height'] ) {
+				$intermediates[] = $name;
+			}
+		}
+
+		foreach( $image_meta['sizes'] as $name => $size ) {
 			// Whitelist the sizes that should be included so we pick up 'medium_large' in 4.4.
-			if ( in_array( $name, array( 'medium', 'medium_large', 'large' ) ) ) {
+			if ( in_array( $name, $intermediates ) ) {
 				$expected[$size['width']] = 'http://example.org/wp-content/uploads/' . $size['file'] . ' ' . $size['width'] . 'w';
 			}
 		}
 
 		// Add the full size width at the end.
-		$expected[$image['width']] = 'http://example.org/wp-content/uploads/' . $image['file'] . ' ' . $image['width'] .'w';
+		$expected[$image_meta['width']] = 'http://example.org/wp-content/uploads/' . $image_meta['file'] . ' ' . $image_meta['width'] .'w';
 
 		$this->assertSame( $expected, $srcset );
 
@@ -260,23 +292,34 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 	 * @expectedDeprecated tevkori_get_srcset_string
 	 */
 	function test_tevkori_get_srcset_string() {
+		global $_wp_additional_image_sizes;
+
 		// Make an image.
 		$id = self::$large_id;
 
 		$srcset = tevkori_get_srcset_string( $id, 'full' );
-		$image = wp_get_attachment_metadata( $id );
+		$image_meta = wp_get_attachment_metadata( $id );
 		$year_month = date('Y/m');
+
+		$intermediates = array( 'medium', 'medium_large', 'large', 'full' );
+
+		// Add any soft crop intermediate sizes.
+		foreach ( $_wp_additional_image_sizes as $name => $additional_size ) {
+			if ( ! $_wp_additional_image_sizes[$name]['crop'] || 0 === $_wp_additional_image_sizes[$name]['height'] ) {
+				$intermediates[] = $name;
+			}
+		}
 
 		$expected = '';
 
-		foreach( $image['sizes'] as $name => $size ) {
+		foreach( $image_meta['sizes'] as $name => $size ) {
 			// Whitelist the sizes that should be included so we pick up 'medium_large' in 4.4.
-			if ( in_array( $name, array( 'medium', 'medium_large', 'large' ) ) ) {
+			if ( in_array( $name, $intermediates ) ) {
 				$expected .= 'http://example.org/wp-content/uploads/' . $year_month = date('Y/m') . '/' . $size['file'] . ' ' . $size['width'] . 'w, ';
 			}
 		}
 		// Add the full size width at the end.
-		$expected .= 'http://example.org/wp-content/uploads/' . $image['file'] . ' ' . $image['width'] .'w';
+		$expected .= 'http://example.org/wp-content/uploads/' . $image_meta['file'] . ' ' . $image_meta['width'] .'w';
 
 		$expected = sprintf( 'srcset="%s"', $expected );
 
@@ -295,6 +338,9 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 		// Test sizes against the default WP sizes.
 		$intermediates = array( 'thumbnail', 'medium', 'large' );
 
+		// Make sure themes aren't filtering the sizes array.
+		remove_all_filters( 'wp_calculate_image_sizes' );
+
 		foreach( $intermediates as $int ) {
 			$width = get_option( $int . '_size_w' );
 
@@ -312,6 +358,7 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 	 * @expectedDeprecated tevkori_get_sizes
 	 */
 	function test_tevkori_get_sizes_with_args() {
+
 		// Make an image.
 		$id = self::$large_id;
 

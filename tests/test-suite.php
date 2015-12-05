@@ -11,8 +11,8 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 		self::$large_id = self::create_upload_object( self::$test_file_name );
 
 		// Keep default themes from ruining things.
-		remove_action( 'after_setup_theme', 'twentyfifteen_setup' );
-		remove_action( 'after_setup_theme', 'twentysixteen_setup' );
+		// remove_action( 'after_setup_theme', 'twentyfifteen_setup' );
+		// remove_action( 'after_setup_theme', 'twentysixteen_setup' );
 
 		// Remove Twenty Sixteen sizes filter for now.
 		remove_filter( 'wp_calculate_image_sizes', 'twentysixteen_content_image_sizes_attr' );
@@ -455,8 +455,8 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 		$image_meta = wp_get_attachment_metadata( self::$large_id );
 		$size_array = array( $image_meta['sizes']['medium']['width'], $image_meta['sizes']['medium']['height'] );
 
-		$srcset = wp_get_attachment_image_srcset( self::$large_id, 'medium', $image_meta );
-		$sizes = wp_get_attachment_image_srcset( self::$large_id, 'medium', $image_meta );
+		$srcset = sprintf( 'srcset="%s"', esc_attr( wp_get_attachment_image_srcset( self::$large_id, 'medium', $image_meta ) ) );
+		$sizes  = sprintf( 'sizes="%s"',  esc_attr( wp_get_attachment_image_sizes( self::$large_id, 'medium', $image_meta ) ) );
 
 		// Function used to build HTML for the editor.
 		$img = get_image_tag( self::$large_id, '', '', '', 'medium' );

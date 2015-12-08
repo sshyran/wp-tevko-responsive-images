@@ -414,18 +414,19 @@ function _wp_get_attachment_image_sizes_filter_shim( $sizes, $size, $image_src, 
 add_filter( 'wp_calculate_image_sizes', '_wp_get_attachment_image_sizes_filter_shim', 10, 5 );
 
 /**
- * Check the content blob for an audio, video, object, embed, or iframe tags.
- * This is a copy of `get_media_embedded_in_content()` in WP 4.4 in order to provide
- * back compatibility to older versions of WordPress.
+ * Check the content blob for an audio, video, object, embed, iframe, or img tags.
+ * This is a modified version of `get_media_embedded_in_content()` that was modified
+ * during the WP 4.4 cycle to return images in content, before being reverted.
  *
  * @since 3.0.0
+ * @deprecated 3.1.1 Use 'get_media_embedded_in_content()'
  *
  * @param string $content A string which might contain media data.
- * @param array  $types   An array of media types: 'audio', 'video', 'object', 'embed', or 'iframe'.
+ * @param array  $types   An array of media types: 'audio', 'video', 'object', 'embed', 'iframe', or 'img'.
  * @return array A list of found HTML media embeds.
  */
 function tevkori_get_media_embedded_in_content( $content, $types = null ) {
-	_deprecated_function( __FUNCTION__, '3.0.0', 'get_media_embedded_in_content()' );
+	_deprecated_function( __FUNCTION__, '3.1.1', 'get_media_embedded_in_content()' );
 	$html = array();
 
 	/**

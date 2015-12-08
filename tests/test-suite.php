@@ -59,7 +59,7 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 	function test_tevkori_get_srcset_array() {
 		global $_wp_additional_image_sizes;
 
-		// make an image
+		// Make an image.
 		$id = self::$large_id;
 		$srcset = tevkori_get_srcset_array( $id, 'medium' );
 
@@ -140,7 +140,7 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 	function test_tevkori_get_srcset_array_random_size_name() {
 		global $_wp_additional_image_sizes;
 
-		// make an image
+		// Make an image.
 		$id = self::$large_id;
 		$srcset = tevkori_get_srcset_array( $id, 'foo' );
 
@@ -174,6 +174,7 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 	 */
 	function test_tevkori_get_srcset_array_no_date_upoads() {
 		global $_wp_additional_image_sizes;
+
 		// Save the current setting for uploads folders.
 		$uploads_use_yearmonth_folders = get_option( 'uploads_use_yearmonth_folders' );
 
@@ -358,7 +359,6 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 	 * @expectedDeprecated tevkori_get_sizes
 	 */
 	function test_tevkori_get_sizes_with_args() {
-
 		// Make an image.
 		$id = self::$large_id;
 
@@ -468,7 +468,7 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 		$img_xhtml = str_replace( ' />', '/>', $img );
 		$img_html5 = str_replace( ' />', '>', $img );
 
-		// Manually add srcset and sizes to the markup from get_image_tag();
+		// Manually add srcset and sizes to the markup from get_image_tag().
 		$respimg = preg_replace( '|<img ([^>]+) />|', '<img $1 ' . $srcset . ' ' . $sizes . ' />', $img );
 		$respimg_no_size_in_class = preg_replace( '|<img ([^>]+) />|', '<img $1 ' . $srcset . ' ' . $sizes . ' />', $img_no_size_in_class );
 		$respimg_no_width_height = preg_replace( '|<img ([^>]+) />|', '<img $1 ' . $srcset . ' ' . $sizes . ' />', $img_no_width_height );

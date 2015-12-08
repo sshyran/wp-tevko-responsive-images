@@ -506,6 +506,23 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 	}
 
 	/**
+	 * When rendering attributes for responsive images,
+	 * we rely on the 'wp-image-*' class to find the image by ID.
+	 * The class name may not be consistent with attachment IDs in DB when
+	 * working with imported content or when a user has edited
+	 * the 'src' attribute manually. To avoid incorrect images
+	 * being displayed, ensure we don't add attributes in this case.
+	 */
+	function test_wp_make_content_images_responsive_wrong() {
+		$image = get_image_tag( self::$large_id, '', '', '', 'medium' );
+
+		// Replace the src URL.
+		$image_wrong_src = preg_replace( '|src="[^"]+"|', 'src="http://' . WP_TESTS_DOMAIN . '/wp-content/uploads/foo.jpg"', $image );
+
+		$this->assertSame( $image_wrong_src, wp_make_content_images_responsive( $image_wrong_src ) );
+	}
+
+	/**
 	 * @group 170
 	 * @expectedDeprecated tevkori_filter_content_images
 	 */

@@ -11,8 +11,8 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 		self::$large_id = self::create_upload_object( self::$test_file_name );
 
 		// Keep default themes from ruining things.
-		// remove_action( 'after_setup_theme', 'twentyfifteen_setup' );
-		// remove_action( 'after_setup_theme', 'twentysixteen_setup' );
+		remove_action( 'after_setup_theme', 'twentyfifteen_setup' );
+		remove_action( 'after_setup_theme', 'twentysixteen_setup' );
 
 		// Remove Twenty Sixteen sizes filter for now.
 		remove_filter( 'wp_calculate_image_sizes', 'twentysixteen_content_image_sizes_attr' );

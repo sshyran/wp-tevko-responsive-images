@@ -243,8 +243,9 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 		$id = self::create_upload_object( self::$test_file_name );
 		$srcset = tevkori_get_srcset_array( $id, 'medium' );
 
-		// The srcset should be false
+		// The srcset should be false.
 		$this->assertFalse( $srcset );
+
 		// Remove filter.
 		remove_filter( 'image_downsize', array( $this, '_filter_image_downsize' ) );
 	}

@@ -419,13 +419,14 @@ add_filter( 'wp_calculate_image_sizes', '_wp_get_attachment_image_sizes_filter_s
  * back compatibility to older versions of WordPress.
  *
  * @since 3.0.0
+ * @deprecated 3.1.1 Use 'get_media_embedded_in_content()'
  *
  * @param string $content A string which might contain media data.
  * @param array  $types   An array of media types: 'audio', 'video', 'object', 'embed', or 'iframe'.
  * @return array A list of found HTML media embeds.
  */
 function tevkori_get_media_embedded_in_content( $content, $types = null ) {
-	_deprecated_function( __FUNCTION__, '3.0.0', 'get_media_embedded_in_content()' );
+	_deprecated_function( __FUNCTION__, '3.1.1', 'get_media_embedded_in_content()' );
 	$html = array();
 
 	/**

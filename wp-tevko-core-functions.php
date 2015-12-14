@@ -402,25 +402,26 @@ function wp_image_add_srcset_and_sizes( $image, $image_meta, $attachment_id ) {
 		return $image;
 	}
 
-	$base_url = trailingslashit( _wp_upload_dir_baseurl() );
-	$image_base_url = $base_url;
-
-	$dirname = dirname( $image_meta['file'] );
-	if ( $dirname !== '.' ) {
-		$image_base_url .= trailingslashit( $dirname );
-	}
+	/**
+	 * To make sure that our ID and image src match, we loop through all the sizes
+	 * in our attachment metadata and bail early if our src file isn't included.
+	 */
+	$file_name = wp_basename( $image_src );
 
 	$all_sizes = wp_list_pluck( $image_meta['sizes'], 'file' );
+	$all_sizes[] = $image_meta['file'];
 
-	foreach ( $all_sizes as $key => $file ) {
-		$all_sizes[ $key ] = $image_base_url . $file;
+	$matched = false;
+
+	foreach( $all_sizes as $size ) {
+		if ( false !== strpos( $size, $file_name ) ) {
+			$matched = true;
+			break;
+		}
 	}
 
-	// Add the original image.
-	$all_sizes[] = $base_url . $image_meta['file'];
-
 	// Bail early if the image src doesn't match any of the known image sizes.
-	if ( ! in_array( $image_src, $all_sizes ) ) {
+	if ( ! $matched ) {
 		return $image;
 	}
 

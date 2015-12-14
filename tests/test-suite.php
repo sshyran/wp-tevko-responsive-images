@@ -635,4 +635,37 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 		$this->assertFalse( strpos( wp_calculate_image_srcset( $large_src, $size_array, $image_meta ), $full_src ) );
 	}
 
+	function test_wp_make_content_images_responsive_schemes() {
+		$image_meta = wp_get_attachment_metadata( self::$large_id );
+		$size_array = array( (int) $image_meta['sizes']['medium']['width'], (int) $image_meta['sizes']['medium']['height'] );
+
+		$srcset = sprintf( 'srcset="%s"', wp_get_attachment_image_srcset( self::$large_id, $size_array, $image_meta ) );
+		$sizes  = sprintf( 'sizes="%s"', wp_get_attachment_image_sizes( self::$large_id, $size_array, $image_meta ) );
+
+		// Build HTML for the editor.
+		$img          = get_image_tag( self::$large_id, '', '', '', 'medium' );
+		$img_https    = str_replace( 'http://', 'https://', $img );
+		$img_relative = str_replace( 'http://', '//', $img );
+
+		// Manually add srcset and sizes to the markup from get_image_tag();
+		$respimg          = preg_replace( '|<img ([^>]+) />|', '<img $1 ' . $srcset . ' ' . $sizes . ' />', $img );
+		$respimg_https    = preg_replace( '|<img ([^>]+) />|', '<img $1 ' . $srcset . ' ' . $sizes . ' />', $img_https );
+		$respimg_relative = preg_replace( '|<img ([^>]+) />|', '<img $1 ' . $srcset . ' ' . $sizes . ' />', $img_relative );
+
+		$content = '
+			<p>Image, http: protocol. Should have srcset and sizes.</p>
+			%1$s
+
+			<p>Image, http: protocol. Should have srcset and sizes.</p>
+			%2$s
+
+			<p>Image, protocol-relative. Should have srcset and sizes.</p>
+			%3$s';
+
+		$unfiltered = sprintf( $content, $img, $img_https, $img_relative );
+		$expected   = sprintf( $content, $respimg, $respimg_https, $respimg_relative );
+		$actual     = wp_make_content_images_responsive( $unfiltered );
+
+		$this->assertSame( $expected, $actual );
+	}
 }

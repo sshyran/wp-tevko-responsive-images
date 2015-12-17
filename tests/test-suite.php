@@ -9,6 +9,13 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 	public static function setUpBeforeClass() {
 		self::$test_file_name = dirname(__FILE__) . '/data/test-large.png';
 		self::$large_id = self::create_upload_object( self::$test_file_name );
+
+		// Keep default themes from ruining things.
+		// remove_action( 'after_setup_theme', 'twentyfifteen_setup' );
+		// remove_action( 'after_setup_theme', 'twentysixteen_setup' );
+
+		// Remove Twenty Sixteen sizes filter for now.
+		remove_filter( 'wp_calculate_image_sizes', 'twentysixteen_content_image_sizes_attr' );
 	}
 
 	public static function tearDownAfterClass() {
@@ -50,22 +57,33 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 	 * @expectedDeprecated tevkori_get_srcset_array
 	 */
 	function test_tevkori_get_srcset_array() {
-		// make an image
+		global $_wp_additional_image_sizes;
+
+		// Make an image.
 		$id = self::$large_id;
 		$srcset = tevkori_get_srcset_array( $id, 'medium' );
 
 		$year_month = date('Y/m');
-		$image = wp_get_attachment_metadata( $id );
+		$image_meta = wp_get_attachment_metadata( $id );
 
-		foreach( $image['sizes'] as $name => $size ) {
+		$intermediates = array( 'medium', 'medium_large', 'large', 'full' );
+
+		// Add any soft crop intermediate sizes.
+		foreach ( $_wp_additional_image_sizes as $name => $additional_size ) {
+			if ( ! $_wp_additional_image_sizes[$name]['crop'] || 0 === $_wp_additional_image_sizes[$name]['height'] ) {
+				$intermediates[] = $name;
+			}
+		}
+
+		foreach( $image_meta['sizes'] as $name => $size ) {
 			// Whitelist the sizes that should be included so we pick up 'medium_large' in 4.4.
-			if ( in_array( $name, array( 'medium', 'medium_large', 'large' ) ) ) {
+			if ( in_array( $name, $intermediates ) ) {
 				$expected[$size['width']] = 'http://example.org/wp-content/uploads/' . $year_month = date('Y/m') . '/' . $size['file'] . ' ' . $size['width'] . 'w';
 			}
 		}
 
 		// Add the full size width at the end.
-		$expected[$image['width']] = 'http://example.org/wp-content/uploads/' . $image['file'] . ' ' . $image['width'] .'w';
+		$expected[$image_meta['width']] = 'http://example.org/wp-content/uploads/' . $image_meta['file'] . ' ' . $image_meta['width'] .'w';
 
 		$this->assertSame( $expected, $srcset );
 	}
@@ -120,22 +138,33 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 	 * @expectedDeprecated tevkori_get_srcset_array
 	 */
 	function test_tevkori_get_srcset_array_random_size_name() {
+		global $_wp_additional_image_sizes;
+
 		// Make an image.
 		$id = self::$large_id;
 		$srcset = tevkori_get_srcset_array( $id, 'foo' );
 
 		$year_month = date('Y/m');
-		$image = wp_get_attachment_metadata( $id );
+		$image_meta = wp_get_attachment_metadata( $id );
 
-		foreach( $image['sizes'] as $name => $size ) {
+		$intermediates = array( 'medium', 'medium_large', 'large', 'full' );
+
+		// Add any soft crop intermediate sizes.
+		foreach ( $_wp_additional_image_sizes as $name => $additional_size ) {
+			if ( ! $_wp_additional_image_sizes[$name]['crop'] || 0 === $_wp_additional_image_sizes[$name]['height'] ) {
+				$intermediates[] = $name;
+			}
+		}
+
+		foreach( $image_meta['sizes'] as $name => $size ) {
 			// Whitelist the sizes that should be included so we pick up 'medium_large' in 4.4.
-			if ( in_array( $name, array( 'medium', 'medium_large', 'large' ) ) ) {
+			if ( in_array( $name, $intermediates ) ) {
 				$expected[$size['width']] = 'http://example.org/wp-content/uploads/' . $year_month = date('Y/m') . '/' . $size['file'] . ' ' . $size['width'] . 'w';
 			}
 		}
 
 		// Add the full size width at the end.
-		$expected[$image['width']] = 'http://example.org/wp-content/uploads/' . $image['file'] . ' ' . $image['width'] .'w';
+		$expected[$image_meta['width']] = 'http://example.org/wp-content/uploads/' . $image_meta['file'] . ' ' . $image_meta['width'] .'w';
 
 		$this->assertSame( $expected, $srcset );
 	}
@@ -144,6 +173,8 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 	 * @expectedDeprecated tevkori_get_srcset_array
 	 */
 	function test_tevkori_get_srcset_array_no_date_upoads() {
+		global $_wp_additional_image_sizes;
+
 		// Save the current setting for uploads folders.
 		$uploads_use_yearmonth_folders = get_option( 'uploads_use_yearmonth_folders' );
 
@@ -153,17 +184,26 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 		// Make an image.
 		$id = self::create_upload_object( self::$test_file_name );
 		$srcset = tevkori_get_srcset_array( $id, 'medium' );
-		$image = wp_get_attachment_metadata( $id );
+		$image_meta = wp_get_attachment_metadata( $id );
 
-		foreach( $image['sizes'] as $name => $size ) {
+		$intermediates = array( 'medium', 'medium_large', 'large', 'full' );
+
+		// Add any soft crop intermediate sizes.
+		foreach ( $_wp_additional_image_sizes as $name => $additional_size ) {
+			if ( ! $_wp_additional_image_sizes[$name]['crop'] || 0 === $_wp_additional_image_sizes[$name]['height'] ) {
+				$intermediates[] = $name;
+			}
+		}
+
+		foreach( $image_meta['sizes'] as $name => $size ) {
 			// Whitelist the sizes that should be included so we pick up 'medium_large' in 4.4.
-			if ( in_array( $name, array( 'medium', 'medium_large', 'large' ) ) ) {
+			if ( in_array( $name, $intermediates ) ) {
 				$expected[$size['width']] = 'http://example.org/wp-content/uploads/' . $size['file'] . ' ' . $size['width'] . 'w';
 			}
 		}
 
 		// Add the full size width at the end.
-		$expected[$image['width']] = 'http://example.org/wp-content/uploads/' . $image['file'] . ' ' . $image['width'] .'w';
+		$expected[$image_meta['width']] = 'http://example.org/wp-content/uploads/' . $image_meta['file'] . ' ' . $image_meta['width'] .'w';
 
 		$this->assertSame( $expected, $srcset );
 
@@ -243,33 +283,86 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 		$id = self::create_upload_object( self::$test_file_name );
 		$srcset = tevkori_get_srcset_array( $id, 'medium' );
 
-		// The srcset should be false
+		// The srcset should be false.
 		$this->assertFalse( $srcset );
+
 		// Remove filter.
 		remove_filter( 'image_downsize', array( $this, '_filter_image_downsize' ) );
 	}
+
+	function test_wp_calculate_image_srcset_ratio_variance() {
+	// Mock data for this test.
+	$size_array = array( 218, 300);
+	$image_src = 'http://' . WP_TESTS_DOMAIN . '/wp-content/uploads/2015/12/test-768x1055-218x300.png';
+	$image_meta = array(
+		'width' => 768,
+		'height' => 1055,
+		'file' => '2015/12/test-768x1055.png',
+		'sizes' => array(
+			'thumbnail' => array(
+				'file' => 'test-768x1055-150x150.png',
+				'width' => 150,
+				'height' => 150,
+				'mime-type' => 'image/png',
+			),
+			'medium' => array(
+				'file' => 'test-768x1055-218x300.png',
+				'width' => 218,
+				'height' => 300,
+				'mime-type' => 'image/png',
+			),
+			'custom-600' => array(
+				'file' => 'test-768x1055-600x824.png',
+				'width' => 600,
+				'height' => 824,
+				'mime-type' => 'image/png',
+			),
+			'post-thumbnail' => array(
+				'file' => 'test-768x1055-768x510.png',
+				'width' => 768,
+				'height' => 510,
+				'mime-type' => 'image/png',
+			),
+		),
+	);
+
+	$expected_srcset = 'http://' . WP_TESTS_DOMAIN . '/wp-content/uploads/2015/12/test-768x1055-218x300.png 218w, http://' . WP_TESTS_DOMAIN . '/wp-content/uploads/2015/12/test-768x1055-600x824.png 600w, http://' . WP_TESTS_DOMAIN . '/wp-content/uploads/2015/12/test-768x1055.png 768w';
+
+	$this->assertSame( $expected_srcset, wp_calculate_image_srcset( $size_array, $image_src, $image_meta ) );
+}
 
 	/**
 	 * @expectedDeprecated tevkori_get_srcset_string
 	 */
 	function test_tevkori_get_srcset_string() {
+		global $_wp_additional_image_sizes;
+
 		// Make an image.
 		$id = self::$large_id;
 
 		$srcset = tevkori_get_srcset_string( $id, 'full' );
-		$image = wp_get_attachment_metadata( $id );
+		$image_meta = wp_get_attachment_metadata( $id );
 		$year_month = date('Y/m');
+
+		$intermediates = array( 'medium', 'medium_large', 'large', 'full' );
+
+		// Add any soft crop intermediate sizes.
+		foreach ( $_wp_additional_image_sizes as $name => $additional_size ) {
+			if ( ! $_wp_additional_image_sizes[$name]['crop'] || 0 === $_wp_additional_image_sizes[$name]['height'] ) {
+				$intermediates[] = $name;
+			}
+		}
 
 		$expected = '';
 
-		foreach( $image['sizes'] as $name => $size ) {
+		foreach( $image_meta['sizes'] as $name => $size ) {
 			// Whitelist the sizes that should be included so we pick up 'medium_large' in 4.4.
-			if ( in_array( $name, array( 'medium', 'medium_large', 'large' ) ) ) {
+			if ( in_array( $name, $intermediates ) ) {
 				$expected .= 'http://example.org/wp-content/uploads/' . $year_month = date('Y/m') . '/' . $size['file'] . ' ' . $size['width'] . 'w, ';
 			}
 		}
 		// Add the full size width at the end.
-		$expected .= 'http://example.org/wp-content/uploads/' . $image['file'] . ' ' . $image['width'] .'w';
+		$expected .= 'http://example.org/wp-content/uploads/' . $image_meta['file'] . ' ' . $image_meta['width'] .'w';
 
 		$expected = sprintf( 'srcset="%s"', $expected );
 
@@ -287,6 +380,9 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 
 		// Test sizes against the default WP sizes.
 		$intermediates = array( 'thumbnail', 'medium', 'large' );
+
+		// Make sure themes aren't filtering the sizes array.
+		remove_all_filters( 'wp_calculate_image_sizes' );
 
 		foreach( $intermediates as $int ) {
 			$width = get_option( $int . '_size_w' );
@@ -395,62 +491,76 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 
 	/**
 	 * @group 170
-	 * @expectedDeprecated tevkori_get_srcset_string
-	 * @expectedDeprecated tevkori_get_sizes_string
-	 * @expectedDeprecated tevkori_filter_content_images
 	 */
-	function test_tevkori_filter_content_images() {
+	function test_wp_make_content_images_responsive() {
 		// Make an image.
-		$id = self::$large_id;
+		$image_meta = wp_get_attachment_metadata( self::$large_id );
+		$size_array = array( $image_meta['sizes']['medium']['width'], $image_meta['sizes']['medium']['height'] );
 
-		$srcset = tevkori_get_srcset_string( $id, 'medium' );
-		$sizes = tevkori_get_sizes_string( $id, 'medium' );
+		$srcset = sprintf( 'srcset="%s"', esc_attr( wp_get_attachment_image_srcset( self::$large_id, 'medium', $image_meta ) ) );
+		$sizes  = sprintf( 'sizes="%s"',  esc_attr( wp_get_attachment_image_sizes( self::$large_id, 'medium', $image_meta ) ) );
 
 		// Function used to build HTML for the editor.
-		$img = get_image_tag( $id, '', '', '', 'medium' );
-		$img_no_size = str_replace( 'size-', '', $img );
-		$img_no_size_id = str_replace( 'wp-image-', 'id-', $img_no_size );
-		$img_with_sizes = str_replace( '<img ', '<img sizes="99vw" ', $img );
+		$img = get_image_tag( self::$large_id, '', '', '', 'medium' );
+		$img_no_size_in_class = str_replace( 'size-', '', $img );
+		$img_no_width_height = str_replace( ' width="' . $size_array[0] . '"', '', $img );
+		$img_no_width_height = str_replace( ' height="' . $size_array[1] . '"', '', $img_no_width_height );
+		$img_no_size_id = str_replace( 'wp-image-', 'id-', $img );
+		$img_with_sizes_attr = str_replace( '<img ', '<img sizes="99vw" ', $img );
+		$img_xhtml = str_replace( ' />', '/>', $img );
+		$img_html5 = str_replace( ' />', '>', $img );
 
 		// Manually add srcset and sizes to the markup from get_image_tag().
-		$respimg = preg_replace('|<img ([^>]+) />|', '<img $1 ' . $srcset . ' ' . $sizes . ' />', $img );
-		$respimg_no_size = preg_replace('|<img ([^>]+) />|', '<img $1 ' . $srcset . ' ' . $sizes . ' />', $img_no_size );
-		$respimg_with_sizes = preg_replace('|<img ([^>]+) />|', '<img $1 ' . $srcset . ' />', $img_with_sizes );
+		$respimg = preg_replace( '|<img ([^>]+) />|', '<img $1 ' . $srcset . ' ' . $sizes . ' />', $img );
+		$respimg_no_size_in_class = preg_replace( '|<img ([^>]+) />|', '<img $1 ' . $srcset . ' ' . $sizes . ' />', $img_no_size_in_class );
+		$respimg_no_width_height = preg_replace( '|<img ([^>]+) />|', '<img $1 ' . $srcset . ' ' . $sizes . ' />', $img_no_width_height );
+		$respimg_with_sizes_attr = preg_replace('|<img ([^>]+) />|', '<img $1 ' . $srcset . ' />', $img_with_sizes_attr );
+		$respimg_xhtml = preg_replace( '|<img ([^>]+)/>|', '<img $1 ' . $srcset . ' ' . $sizes . ' />', $img_xhtml );
+		$respimg_html5 = preg_replace( '|<img ([^>]+)>|', '<img $1 ' . $srcset . ' ' . $sizes . ' />', $img_html5 );
 
-		$content = '<p>Welcome to WordPress!  This post contains important information.  After you read it, you can make it private to hide it from visitors but still have the information handy for future reference.</p>
-			<p>First things first:</p>
-
+		$content = '
+			<p>Image, standard. Should have srcset and sizes.</p>
 			%1$s
 
-			<ul>
-			<li><a href="http://wordpress.org" title="Subscribe to the WordPress mailing list for Release Notifications">Subscribe to the WordPress mailing list for release notifications</a></li>
-			</ul>
-
+			<p>Image, no size class. Should have srcset and sizes.</p>
 			%2$s
 
-			<p>As a subscriber, you will receive an email every time an update is available (and only then).  This will make it easier to keep your site up to date, and secure from evildoers.<br />
-			When a new version is released, <a href="http://wordpress.org" title="If you are already logged in, this will take you directly to the Dashboard">log in to the Dashboard</a> and follow the instructions.<br />
-			Upgrading is a couple of clicks!</p>
-
+			<p>Image, no width and height attributes. Should have srcset and sizes (from matching the file name).</p>
 			%3$s
 
-			<p>Then you can start enjoying the WordPress experience:</p>
-			<ul>
-			<li>Edit your personal information at <a href="http://wordpress.org" title="Edit settings like your password, your display name and your contact information">Users &#8250; Your Profile</a></li>
-			<li>Start publishing at <a href="http://wordpress.org" title="Create a new post">Posts &#8250; Add New</a> and at <a href="http://wordpress.org" title="Create a new page">Pages &#8250; Add New</a></li>
-			<li>Browse and install plugins at <a href="http://wordpress.org" title="Browse and install plugins at the official WordPress repository directly from your Dashboard">Plugins &#8250; Add New</a></li>
-			<li>Browse and install themes at <a href="http://wordpress.org" title="Browse and install themes at the official WordPress repository directly from your Dashboard">Appearance &#8250; Add New Themes</a></li>
-			<li>Modify and prettify your website&#8217;s links at <a href="http://wordpress.org" title="For example, select a link structure like: http://example.com/1999/12/post-name">Settings &#8250; Permalinks</a></li>
-			<li>Import content from another system or WordPress site at <a href="http://wordpress.org" title="WordPress comes with importers for the most common publishing systems">Tools &#8250; Import</a></li>
-			<li>Find answers to your questions at the <a href="http://wordpress.orgs" title="The official WordPress documentation, maintained by the WordPress community">WordPress Codex</a></li>
-			</ul>
+			<p>Image, no attachment ID class. Should NOT have srcset and sizes.</p>
+			%4$s
 
-			%4$s';
+			<p>Image, with sizes attribute. Should NOT have two sizes attributes.</p>
+			%5$s
 
-		$content_unfiltered = sprintf( $content, $img, $img_no_size, $img_no_size_id, $img_with_sizes );
-		$content_filtered = sprintf( $content, $respimg, $respimg_no_size, $img_no_size_id, $respimg_with_sizes );
+			<p>Image, XHTML 1.0 style (no space before the closing slash). Should have srcset and sizes.</p>
+			%6$s
 
-		$this->assertSame( $content_filtered, tevkori_filter_content_images( $content_unfiltered ) );
+			<p>Image, HTML 5.0 style. Should have srcset and sizes.</p>
+			%7$s';
+
+		$content_unfiltered = sprintf( $content, $img, $img_no_size_in_class, $img_no_width_height, $img_no_size_id, $img_with_sizes_attr, $img_xhtml, $img_html5 );
+		$content_filtered = sprintf( $content, $respimg, $respimg_no_size_in_class, $respimg_no_width_height, $img_no_size_id, $respimg_with_sizes_attr, $respimg_xhtml, $respimg_html5 );
+
+		$this->assertSame( $content_filtered, wp_make_content_images_responsive( $content_unfiltered ) );
+	}
+
+	/**
+	 * When rendering attributes for responsive images,
+	 * we rely on the 'wp-image-*' class to find the image by ID.
+	 * The class name may not be consistent with attachment IDs in DB when
+	 * working with imported content or when a user has edited
+	 * the 'src' attribute manually. To avoid incorrect images
+	 * being displayed, ensure we don't add attributes in this case.
+	 */
+	function test_wp_make_content_images_responsive_wrong() {
+		$image = get_image_tag( self::$large_id, '', '', '', 'medium' );
+
+		// Replace the src URL.
+		$image_wrong_src = preg_replace( '|src="[^"]+"|', 'src="http://' . WP_TESTS_DOMAIN . '/wp-content/uploads/foo.jpg"', $image );
+
+		$this->assertSame( $image_wrong_src, wp_make_content_images_responsive( $image_wrong_src ) );
 	}
 
 	/**
@@ -566,4 +676,37 @@ class RICG_Responsive_Images_Tests extends WP_UnitTestCase {
 		$this->assertFalse( strpos( wp_calculate_image_srcset( $large_src, $size_array, $image_meta ), $full_src ) );
 	}
 
+	function test_wp_make_content_images_responsive_schemes() {
+		$image_meta = wp_get_attachment_metadata( self::$large_id );
+		$size_array = array( (int) $image_meta['sizes']['medium']['width'], (int) $image_meta['sizes']['medium']['height'] );
+
+		$srcset = sprintf( 'srcset="%s"', wp_get_attachment_image_srcset( self::$large_id, $size_array, $image_meta ) );
+		$sizes  = sprintf( 'sizes="%s"', wp_get_attachment_image_sizes( self::$large_id, $size_array, $image_meta ) );
+
+		// Build HTML for the editor.
+		$img          = get_image_tag( self::$large_id, '', '', '', 'medium' );
+		$img_https    = str_replace( 'http://', 'https://', $img );
+		$img_relative = str_replace( 'http://', '//', $img );
+
+		// Manually add srcset and sizes to the markup from get_image_tag();
+		$respimg          = preg_replace( '|<img ([^>]+) />|', '<img $1 ' . $srcset . ' ' . $sizes . ' />', $img );
+		$respimg_https    = preg_replace( '|<img ([^>]+) />|', '<img $1 ' . $srcset . ' ' . $sizes . ' />', $img_https );
+		$respimg_relative = preg_replace( '|<img ([^>]+) />|', '<img $1 ' . $srcset . ' ' . $sizes . ' />', $img_relative );
+
+		$content = '
+			<p>Image, http: protocol. Should have srcset and sizes.</p>
+			%1$s
+
+			<p>Image, http: protocol. Should have srcset and sizes.</p>
+			%2$s
+
+			<p>Image, protocol-relative. Should have srcset and sizes.</p>
+			%3$s';
+
+		$unfiltered = sprintf( $content, $img, $img_https, $img_relative );
+		$expected   = sprintf( $content, $respimg, $respimg_https, $respimg_relative );
+		$actual     = wp_make_content_images_responsive( $unfiltered );
+
+		$this->assertSame( $expected, $actual );
+	}
 }

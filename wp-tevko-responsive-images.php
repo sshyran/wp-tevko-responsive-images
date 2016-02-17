@@ -103,7 +103,9 @@ function tevkori_filter_attachment_image_attributes( $attr, $attachment, $size )
 function tevkori_replace_data_sizes( $content ) {
 	return str_replace( ' data-sizes="', ' sizes="', $content );
 }
-add_filter( 'the_content', 'tevkori_replace_data_sizes' );
+if ( ! 0 === get_transient( 'tevkori_find_respimg_attr' ) ) {
+	add_filter( 'the_content', 'tevkori_replace_data_sizes' );
+}
 
 /**
  * Checks if there are images with 'data-sizes' and 'srcset' attributes in the post content.

@@ -187,7 +187,7 @@ function _tevkori_menu_page() {
 		<h2>RICG Responsive Images Plugin</h2>
 
 		<div class="notice notice-warning">
-			<p>We have found <?php if ( 1 == $matches ) { echo '1 post'; } else { echo $matches . ' posts'; } ?> with images that contain <code>data-sizes</code> and <code>srcset</code> attributes. We strongly recommend to remove those attributes from images in your posts.</p>
+			<p>We have found <?php if ( 1 == $matches ) { echo '1 post'; } else { echo $matches . ' posts'; } ?> with images that contain <code>data-sizes</code> and <code>srcset</code> attributes. We strongly recommend to remove those attributes!</p>
 		</div>
 
 		<h3>Explanation</h3>
@@ -198,7 +198,7 @@ function _tevkori_menu_page() {
 
 		<p>Besides this, the functions that calculate the values for the <code>srcset</code> and <code>sizes</code> attributes have been improved over time and filter hooks have been added to make it possible to change the values in specific situations. As long as images already have a <code>srcset</code> attribute you won't benefit from these improvements.</p>
 
-		<p>Therefor it's strongly recommended to remove <code>data-sizes</code> and <code>srcset</code> attributes from <code>img</code> elements in the post content. You can do this automatically with the cleanup tool on this page or manually.</p>
+		<p>Therefor it's strongly recommended to remove <code>srcset</code> and <code>data-sizes</code> attributes from <code>img</code> elements in the post content. You can do this automatically with the cleanup tool on this page or manually.</p>
 
 		<?php if ( $wp_version >= 4.4 ) : ?>
 		<h4>WordPress 4.4+</h4>
@@ -207,7 +207,7 @@ function _tevkori_menu_page() {
 
 		<h4>Do I Still Need This Plugin After Removing The Attributes?</h4>
 
-		<p>No, you would no longer need to use this plugin to make images responsive if the <code>data-sizes</code> and <code>srcset</code> attributes have been removed from all images. However, you can keep using it to benefit from the following two features:</p>
+		<p>No, you would no longer need to use this plugin to make images responsive if the <code>srcset</code> and <code>data-sizes</code> attributes have been removed from all images. However, you can keep using it to benefit from the following two features:</p>
 
 		<ol>
 			<li>The plugin loads the Picturefill polyfill, a small JavaScript file that makes responsive images work on older browsers that don't offer native support</li>
@@ -219,7 +219,7 @@ function _tevkori_menu_page() {
 
 		<h3>Cleanup Tool</h3>
 
-		<p>This tool automatically removes <code>data-sizes</code> and <code>srcset</code> attributes from all images in the content of your posts. It updates the post content in the database. This can't be undone and if something goes wrong you might lose your content so it's very important to <strong>make a backup of your database</strong> before proceeding!</p>
+		<p>This tool automatically removes <code>srcset</code> and <code>data-sizes</code> attributes from all images in the content of your posts. It updates the post content in the database. This can't be undone and if something goes wrong you might lose your content so it's very important to <strong>make a backup of your database</strong> before proceeding!</p>
 
 		<p>After succesfully removing these attributes from all images this page will disappear from the Tools menu and you will no longer see a warning on the dashboard and plugin menu page.</p>
 
@@ -235,7 +235,7 @@ function _tevkori_menu_page() {
 
 		<h3>Manually Remove</h3>
 
-		<p>To manually remove the <code>data-sizes</code> and <code>srcset</code> attributes you have to edit each post and page that contains images that were inserted while version 2.4 or older of this plugin was active. In the editor switch from the "Visual" to "Text" tab in the top right corner in order to see image markup instead of the images itself. Look for <code>&lt;img ... &gt;</code> elements and delete <code>data-sizes="..."</code> and <code>srcset="..."</code>.</p>
+		<p>To manually remove the <code>srcset</code> and <code>data-sizes</code> attributes you have to edit each post and page that contains images that were inserted while version 2.4 or older of this plugin was active. In the editor switch from the "Visual" to "Text" tab in the top right corner in order to see image markup instead of the images itself. Look for <code>&lt;img ... &gt;</code> elements and delete <code>data-sizes="..." srcset="..."</code>.</p>
 
 		<p>After you have removed these attributes from all images you can run this check. If there are no more images with these attributes this page will disappear from the Tools menu and you will no longer see a warning on the dashboard and plugin menu page.</p>
 
@@ -297,9 +297,9 @@ function _tevkori_cleanup_post_content() {
 		} else {
 			wp_redirect( admin_url( 'plugins.php?ricg-cleanup=success' ) );
 		}
-    } else {
+	} else {
 		wp_redirect( admin_url( 'tools.php?page=ricg-responsive-images&ricg-cleanup=backup' ) );
-    }
+	}
 
 	exit();
 }
